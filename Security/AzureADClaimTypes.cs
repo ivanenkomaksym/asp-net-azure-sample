@@ -1,11 +1,14 @@
-﻿namespace AspNetAzureSample.Security
+﻿using Microsoft.Identity.Web;
+
+namespace AspNetAzureSample.Security
 {
     public static class AzureADClaimTypes
     {
-        public const string TenantId = "http://schemas.microsoft.com/identity/claims/tenantid";
-        public const string ObjectId = "http://schemas.microsoft.com/identity/claims/objectidentifier";
-        public const string Scope = "http://schemas.microsoft.com/identity/claims/scope";
-        public const string Role = "http://schemas.microsoft.com/ws/2008/06/identity/claims/role";
-        public const string Name = "name";
+        public const string TenantId = ClaimConstants.TenantId;
+        public const string ObjectId = ClaimConstants.ObjectId;
+        public const string Scope = ClaimConstants.Scope;
+        public const string Role = ClaimConstants.Role;
+        public const string Roles = ClaimConstants.Roles;
+        public const string Name = ClaimConstants.Name;
     }
 }

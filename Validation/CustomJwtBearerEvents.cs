@@ -27,7 +27,7 @@ namespace AspNetAzureSample.Validation
         {
             var principal = context.Principal;
             var issuerValue = principal.GetIssuerValue();
-            Logger.TokenValidationSucceeded(principal.GetObjectIdentifierValue(), issuerValue, principal.GetScopeValue(), principal.GetRoleValue());
+            Logger.TokenValidationSucceeded(principal.GetObjectIdentifierValue(), issuerValue, principal.GetScopeValue(), principal.GetRoleValue(), principal.GetRolesValue());
             return base.TokenValidated(context);
         }
     }

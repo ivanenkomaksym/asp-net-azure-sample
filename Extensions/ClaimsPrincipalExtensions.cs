@@ -36,12 +36,12 @@ namespace AspNetAzureSample.Extensions
             return principal.FindFirstValue(AzureADClaimTypes.TenantId, true);
         }
 
-        public static string GetObjectIdentifierValue(this ClaimsPrincipal principal, bool throwIfNotFound = true)
+        public static string GetObjectIdentifierValue(this ClaimsPrincipal principal, bool throwIfNotFound = false)
         {
             return principal.FindFirstValue(AzureADClaimTypes.ObjectId, throwIfNotFound);
         }
 
-        public static string GetScopeValue(this ClaimsPrincipal principal, bool throwIfNotFound = true)
+        public static string GetScopeValue(this ClaimsPrincipal principal, bool throwIfNotFound = false)
         {
             return principal.FindFirstValue(AzureADClaimTypes.Scope, throwIfNotFound);
         }
@@ -49,6 +49,11 @@ namespace AspNetAzureSample.Extensions
         public static string GetRoleValue(this ClaimsPrincipal principal, bool throwIfNotFound = false)
         {
             return principal.FindFirstValue(AzureADClaimTypes.Role, throwIfNotFound);
+        }
+
+        public static string GetRolesValue(this ClaimsPrincipal principal, bool throwIfNotFound = false)
+        {
+            return principal.FindFirstValue(AzureADClaimTypes.Roles, throwIfNotFound);
         }
 
         public static string GetDisplayNameValue(this ClaimsPrincipal principal)

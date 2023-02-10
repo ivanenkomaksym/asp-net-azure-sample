@@ -1,4 +1,5 @@
 using AspNetAzureSample.Configuration;
+using AspNetAzureSample.Security;
 using AspNetAzureSample.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
@@ -43,7 +44,11 @@ services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
         });
 
-services.AddAuthorization();
+services.AddAuthorization(opts =>
+{
+    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, "access_as_application"));
+});
+
 services.AddControllersWithViews(options =>
 {
     var policy = new AuthorizationPolicyBuilder()

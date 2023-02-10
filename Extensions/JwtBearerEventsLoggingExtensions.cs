@@ -18,9 +18,9 @@
         {
             logger.LogWarning("Tenant is not registered User: {0} Issuer: {1}", userId, issuer);
         }
-        public static void TokenValidationSucceeded(this ILogger logger, string userId, string issuer, string scope, string role)
+        public static void TokenValidationSucceeded(this ILogger logger, string userId, string issuer, string scope, string role, string roles)
         {
-            logger.LogInformation("Token validation succeeded: User: {0} Issuer: {1} Scope: {2} Role: {3}", userId, issuer, scope, role);
+            logger.LogInformation("Token validation succeeded: User: {0} Issuer: {1} Scope: {2} Role: {3} Roles: {4}", userId, issuer, scope, role, roles);
         }
     }
 }
