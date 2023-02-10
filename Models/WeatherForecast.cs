@@ -1,4 +1,4 @@
-namespace asp_net_azure_sample
+namespace AspNetAzureSample.Models
 {
     public class WeatherForecast
     {

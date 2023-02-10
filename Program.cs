@@ -1,25 +1,118 @@
+using AspNetAzureSample.Configuration;
+using AspNetAzureSample.Validation;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.Identity.Web;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+var configuration = builder.Configuration;
+var services = builder.Services;
 
-builder.Services.AddControllers();
+// Add services to the container.
+var azureadOptions = new AzureADOptions();
+configuration.Bind(AzureADOptions.Name, azureadOptions);
+
+var swaggerOptions = new SwaggerOptions();
+configuration.Bind(SwaggerOptions.Name, swaggerOptions);
+
+var loggerFactory = LoggerFactory.Create(builder =>
+{
+    builder.AddDebug();
+    builder.AddConsole();
+    builder.SetMinimumLevel(LogLevel.Information);
+});
+
+services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddMicrosoftIdentityWebApi(jwtOptions =>
+        {
+            configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
+            jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
+                                                                    SecurityToken securityToken,
+                                                                    TokenValidationParameters validationParameters) =>
+            {
+                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
+            };
+            jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+        },
+        msIdentityOptions =>
+        {
+            configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
+        });
+
+services.AddAuthorization();
+services.AddControllersWithViews(options =>
+{
+    var policy = new AuthorizationPolicyBuilder()
+        .RequireAuthenticatedUser()
+        .Build();
+    options.Filters.Add(new AuthorizeFilter(policy));
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherForecast", Version = "v1" });
+
+    var host = azureadOptions.Instance;
+    var tenantId = azureadOptions.TenantId;
+    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    {
+        Type = SecuritySchemeType.OAuth2,
+        Flows = new OpenApiOAuthFlows()
+        {
+            Implicit = new OpenApiOAuthFlow()
+            {
+                AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize"),
+                TokenUrl = new Uri($"{host}/{tenantId}/oauth2/v2.0/token")
+            }
+        }
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+        {
+            new OpenApiSecurityScheme {
+                Reference = new OpenApiReference {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "oauth2"
+                },
+            },
+            new List <string> {}
+        }
+    });
+});
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 app.UseHttpsRedirection();
 
+app.UseRouting();
+// UseCors must be placed after UseRouting and before UseAuthorization, see https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
+app.UseCors();
+
+app.UseAuthentication();
+// UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
 app.UseAuthorization();
 
-app.MapControllers();
+app.UseSwagger();
+app.UseSwaggerUI(c =>
+{
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "WeatherForecast v1");
+    c.OAuthClientId(swaggerOptions.ClientID);
+    c.OAuthClientSecret(swaggerOptions.ClientSecret);
+    c.OAuthRealm(azureadOptions.ClientID);
+    c.OAuthScopeSeparator(" ");
+    // Needed for AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize")
+    c.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "resource", azureadOptions.ClientID } };
+});
+
+app.UseEndpoints(endpoints =>
+{
+    endpoints.MapControllers();
+});
 
 app.Run();

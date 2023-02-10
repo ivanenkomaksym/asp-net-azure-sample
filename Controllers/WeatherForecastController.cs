@@ -1,6 +1,7 @@
+using AspNetAzureSample.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace asp_net_azure_sample.Controllers
+namespace AspNetAzureSample.Controllers
 {
     [ApiController]
     [Route("[controller]")]
@@ -8,8 +9,8 @@ namespace asp_net_azure_sample.Controllers
     {
         private static readonly string[] Summaries = new[]
         {
-        "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-    };
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
 
         private readonly ILogger<WeatherForecastController> _logger;
 
