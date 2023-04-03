@@ -1,6 +1,7 @@
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.Validation;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
@@ -27,26 +28,36 @@ var loggerFactory = LoggerFactory.Create(builder =>
     builder.SetMinimumLevel(LogLevel.Information);
 });
 
-services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-        .AddMicrosoftIdentityWebApi(jwtOptions =>
-        {
-            configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
-            jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
-                                                                    SecurityToken securityToken,
-                                                                    TokenValidationParameters validationParameters) =>
+services.AddControllers();
+
+if (azureadOptions.Enable)
+{
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddMicrosoftIdentityWebApi(jwtOptions =>
             {
-                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
-            };
-            jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-        },
-        msIdentityOptions =>
-        {
-            configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
-        });
+                configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
+                jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
+                                                                        SecurityToken securityToken,
+                                                                        TokenValidationParameters validationParameters) =>
+                {
+                    return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
+                };
+                jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+            },
+            msIdentityOptions =>
+            {
+                configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
+            });
+}
+else
+{
+    services.AddAuthentication(FixedAuthenticationHandler.AuthenticationScheme)
+            .AddScheme<AuthenticationSchemeOptions, FixedAuthenticationHandler>(FixedAuthenticationHandler.AuthenticationScheme, null);
+}
 
 services.AddAuthorization(opts =>
 {
-    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, "access_as_application"));
+    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureadOptions.RoleName));
 });
 
 services.AddControllersWithViews(options =>
@@ -63,32 +74,36 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherForecast", Version = "v1" });
 
-    var host = azureadOptions.Instance;
-    var tenantId = azureadOptions.TenantId;
-    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+    if (azureadOptions.Enable)
     {
-        Type = SecuritySchemeType.OAuth2,
-        Flows = new OpenApiOAuthFlows()
+        var host = azureadOptions.Instance;
+        var tenantId = azureadOptions.TenantId;
+        c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
         {
-            Implicit = new OpenApiOAuthFlow()
+            Type = SecuritySchemeType.OAuth2,
+            Flows = new OpenApiOAuthFlows()
             {
-                AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize"),
-                TokenUrl = new Uri($"{host}/{tenantId}/oauth2/v2.0/token")
+                Implicit = new OpenApiOAuthFlow()
+                {
+                    AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize"),
+                    TokenUrl = new Uri($"{host}/{tenantId}/oauth2/v2.0/token")
+                }
             }
-        }
-    });
+        });
 
-    c.AddSecurityRequirement(new OpenApiSecurityRequirement() {
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement() 
         {
-            new OpenApiSecurityScheme {
-                Reference = new OpenApiReference {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "oauth2"
+            {
+                new OpenApiSecurityScheme {
+                    Reference = new OpenApiReference {
+                        Type = ReferenceType.SecurityScheme,
+                        Id = "oauth2"
+                    },
                 },
-            },
-            new List <string> {}
-        }
-    });
+                new List <string> {}
+            } 
+        });
+    }
 });
 
 var app = builder.Build();
