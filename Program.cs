@@ -1,5 +1,6 @@
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Security;
+using AspNetAzureSample.UserProviders;
 using AspNetAzureSample.Validation;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -32,6 +33,8 @@ services.AddControllers();
 
 if (azureadOptions.Enable)
 {
+    services.AddSingleton<IUserProvider, DefaultUserProvider>();
+
     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(jwtOptions =>
             {
@@ -51,6 +54,8 @@ if (azureadOptions.Enable)
 }
 else
 {
+    services.AddSingleton<IUserProvider, BearerTokenUserProvider>();
+
     services.AddAuthentication(FixedAuthenticationHandler.AuthenticationScheme)
             .AddScheme<AuthenticationSchemeOptions, FixedAuthenticationHandler>(FixedAuthenticationHandler.AuthenticationScheme, null);
 }

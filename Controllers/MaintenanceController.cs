@@ -1,4 +1,5 @@
 ﻿using AspNetAzureSample.Security;
+using AspNetAzureSample.UserProviders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -8,11 +9,20 @@ namespace AspNetAzureSample.Controllers
     [Route("[controller]")]
     public class MaintenanceController : ControllerBase
     {
+        public MaintenanceController(IUserProvider userProvider)
+        {
+            UserProvider = userProvider;
+        }
+
         [Authorize(Policy = AuthorizationPolicies.ApplicationAccessPolicy)]
         [HttpPost]
         public IActionResult Reinitialize()
         {
+            var _ = UserProvider.GetUserName(HttpContext);
+
             return Ok();
         }
+
+        private readonly IUserProvider UserProvider;
     }
 }

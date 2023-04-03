@@ -1,4 +1,5 @@
 using AspNetAzureSample.Models;
+using AspNetAzureSample.UserProviders;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetAzureSample.Controllers
@@ -7,21 +8,16 @@ namespace AspNetAzureSample.Controllers
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
-        private static readonly string[] Summaries = new[]
+        public WeatherForecastController(IUserProvider userProvider)
         {
-            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-        };
-
-        private readonly ILogger<WeatherForecastController> _logger;
-
-        public WeatherForecastController(ILogger<WeatherForecastController> logger)
-        {
-            _logger = logger;
+            UserProvider = userProvider;
         }
 
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            var _ = UserProvider.GetUserName(HttpContext);
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
@@ -30,5 +26,12 @@ namespace AspNetAzureSample.Controllers
             })
             .ToArray();
         }
+
+        private static readonly string[] Summaries = new[]
+        {
+            "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
+        };
+
+        private readonly IUserProvider UserProvider;
     }
 }
