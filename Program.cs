@@ -12,6 +12,8 @@ using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddRazorPages();
+
 var configuration = builder.Configuration;
 var services = builder.Services;
 
@@ -113,6 +115,8 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 app.UseRouting();
 // UseCors must be placed after UseRouting and before UseAuthorization, see https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
 app.UseCors(builder =>
@@ -123,6 +127,8 @@ app.UseCors(builder =>
 app.UseAuthentication();
 // UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
 app.UseAuthorization();
+
+app.MapRazorPages();
 
 app.UseSwagger();
 app.UseSwaggerUI(c =>
