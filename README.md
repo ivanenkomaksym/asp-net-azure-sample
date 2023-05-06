@@ -19,21 +19,29 @@ This sample demonstrates how to configure ASP.NET application for:
    - In the **App roles** add new **access_as_application** role for **Applications** as **Allowed member types**
    - In the **API permissions** add **Azure Service Management** and select **user_impersonation**
 3. Register swagger client application
-   - Configure **Authentication**/**Redirect URIs** if needed
+   - Add https://localhost:44321 to **Authentication**/**Redirect URIs**
    - In the **Certificates & secrets** generate new client secret and save the value
    - In the **API permissions** add **My APIs**, select service application from step 2 and choose **Delegated permissions**
-4. Register daemon client application
+4. Register UI client application
+   - In the **Supported account types** section, select **Accounts in any organizational directory**
+   - in the **Redirect URIs** select **Single-page application (SPA)** and add https://localhost:44321
+   - In the **API permissions** add **My APIs**, select service application from step 2 and choose **Delegated permissions**
+   - Get back to service web application Azure configuration from step 2 and add this UI client application id to **Expose an API**/**Authorized client applications**
+5. Register daemon client application
    - In the **Certificates & secrets** generate new client secret and save the value
    - In the **API permissions** add **My APIs**, select service application from step 2, choose **Application permissions** and **access_as_application**.
    - At this stage permissions are assigned correctly but the client app does not allow interaction. Therefore no consent can be presented via a UI and accepted to use the service app. Click the Grant/revoke admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be an Azure AD tenant admin to do this.
-5. Fill in **appsettings.json**
-6. Start application
-7. Click authorize in Swagger, select your work or school account
+6. Fill in **appsettings.json**
+7. Fill in **wwwroot\js\clientConfig.js**
+8. Start application
+9. Click **Sign in** using accounts from different tenants
+10. Click **Weather Forecast** button to access service web application
    - https://localhost:44321/WeatherForecast is accessible from all accounts that belong to **AcceptedTenantIds** list in **appsettings.json**
-8. In **Postman** get an access token as described in [Get an access token](https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token)
+11. Swagger page is accessible via https://localhost:44321/swagger
+12. In **Postman** get an access token as described in [Get an access token](https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token)
    - POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
    - client_id={daemon app client id from step 4}
    - scope={service app client id from step2}/.default
    - client_secret={daemon app client secret from step 4}
    - grant_type=client_credentials
-10. Using generated token access https://localhost:44321/Maintenance
+13. Using generated token access https://localhost:44321/Maintenance
