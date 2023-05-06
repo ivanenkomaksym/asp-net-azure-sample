@@ -113,11 +113,12 @@ builder.Services.AddSwaggerGen(c =>
 
 var app = builder.Build();
 
-app.UseHttpsRedirection();
-
 app.UseRouting();
 // UseCors must be placed after UseRouting and before UseAuthorization, see https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
-app.UseCors();
+app.UseCors(builder =>
+{
+    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+});
 
 app.UseAuthentication();
 // UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
