@@ -45,3 +45,18 @@ This sample demonstrates how to configure ASP.NET application for:
    - client_secret={daemon app client secret from step 4}
    - grant_type=client_credentials
 13. Using generated token access https://localhost:44321/Maintenance
+
+## Authentication for Testing
+
+In certain scenarios, it may be necessary to run the application with authentication enabled but without using a real user, especially during testing. This sample includes a special middleware that ensures the return of an authenticated user without actual authentication. This middleware is only added when the `ASPNETCORE_ENVIRONMENT` is set to `Testing`.
+
+You can initiate the `testing` profile from Visual Studio or by running the following command:
+
+```bash
+dotnet run --environment Testing
+```
+
+When running in this mode, attempting to access the API without proper authentication in Swagger or a client will be restricted. However, you can still access the API by including the header `X-Testing-Name=<username>` in the request, for instance, when using Postman at https://localhost:44321/WeatherForecast.
+
+## References
+[Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
