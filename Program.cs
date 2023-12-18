@@ -1,3 +1,4 @@
+using AspNetAzureSample.Authentication;
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.UserProviders;
@@ -116,6 +117,9 @@ builder.Services.AddSwaggerGen(c =>
 var app = builder.Build();
 
 app.UseStaticFiles();
+
+if (app.Environment.IsEnvironment(EnvironmentConfiguration.Testing))
+    app.UseMiddleware<AuthenticatedTestRequestMiddleware>();
 
 app.UseRouting();
 // UseCors must be placed after UseRouting and before UseAuthorization, see https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
