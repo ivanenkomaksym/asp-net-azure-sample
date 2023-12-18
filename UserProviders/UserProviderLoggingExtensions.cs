@@ -1,4 +1,6 @@
-﻿namespace AspNetAzureSample.UserProviders
+﻿using System.Security.Claims;
+
+namespace AspNetAzureSample.UserProviders
 {
     internal static class UserProviderLoggingExtensions
     {
@@ -12,9 +14,9 @@
             logger.LogInformation($"DefaultUserProvider: received default environment '{userName}' user name.");
         }
 
-        public static void BearerTokenUserProviderUserNameReceived(this ILogger logger, string userName)
+        public static void BearerTokenUserProviderUserNameReceived(this ILogger logger, string userName, Claim? ipaddrClaim)
         {
-            logger.LogInformation($"BearerTokenUserProvider: received '{userName}' user name.");
+            logger.LogInformation($"BearerTokenUserProvider: received '{userName}' user name. IP address: {ipaddrClaim?.Value}");
         }
     }
 }

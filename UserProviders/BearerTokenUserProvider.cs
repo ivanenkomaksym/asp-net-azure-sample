@@ -30,7 +30,9 @@ namespace AspNetAzureSample.UserProviders
             if (nameClaim == null)
                 return base.GetUserName(httpContext);
 
-            Logger.BearerTokenUserProviderUserNameReceived(nameClaim.Value);
+            var ipaddrClaim = token.Claims.FirstOrDefault(claim => claim.Type == "ipaddr", null);
+
+            Logger.BearerTokenUserProviderUserNameReceived(nameClaim.Value, ipaddrClaim);
 
             return nameClaim.Value;
         }
