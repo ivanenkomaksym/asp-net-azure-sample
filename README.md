@@ -13,13 +13,13 @@ This sample demonstrates how to configure ASP.NET application for:
 1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account
 2. Register the service web application
    - In the **Supported account types** section, select **Accounts in any organizational directory**
-   - In the **Authentication**/**Implicit grant and hybrid flows** section, check **ID tokens**
    - In the **Expose an API** make sure Application ID URI contains **"api://[client id]"**
    - in the **Expose an API** add scope **"api://[client id]/[Application name]"**
    - In the **App roles** add new **access_as_application** role for **Applications** as **Allowed member types**
    - In the **API permissions** add **Azure Service Management** and select **user_impersonation**
 3. Register swagger client application
    - Add https://localhost:44321 to **Authentication**/**Redirect URIs**
+   - In the **Authentication**/**Implicit grant and hybrid flows** section, check **ID tokens**
    - In the **Certificates & secrets** generate new client secret and save the value
    - In the **API permissions** add **My APIs**, select service application from step 2 and choose **Delegated permissions**
 4. Register UI client application
