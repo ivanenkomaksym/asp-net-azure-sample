@@ -27,14 +27,26 @@ namespace AspNetAzureSample.UserProviders
             var token = new JwtSecurityToken(encoded);
 
             var nameClaim = token.Claims.FirstOrDefault(claim => claim.Type == "unique_name", null);
-            if (nameClaim == null)
+            var emailClaim = token.Claims.FirstOrDefault(claim => claim.Type == "email", null);
+
+            if (nameClaim != null)
+            {
+                var ipaddrClaim = token.Claims.FirstOrDefault(claim => claim.Type == "ipaddr", null);
+
+                Logger.BearerTokenUserProviderUserNameReceived(nameClaim.Value, ipaddrClaim);
+
+                return nameClaim.Value;
+            }
+            else if (emailClaim != null)
+            {
+                Logger.BearerTokenUserProviderEmailReceived(emailClaim.Value);
+
+                return emailClaim.Value;
+            }
+            else
+            {
                 return base.GetUserName(httpContext);
-
-            var ipaddrClaim = token.Claims.FirstOrDefault(claim => claim.Type == "ipaddr", null);
-
-            Logger.BearerTokenUserProviderUserNameReceived(nameClaim.Value, ipaddrClaim);
-
-            return nameClaim.Value;
+            }
         }
     }
 }

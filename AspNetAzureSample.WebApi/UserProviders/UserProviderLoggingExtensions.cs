@@ -18,5 +18,10 @@ namespace AspNetAzureSample.UserProviders
         {
             logger.LogInformation($"BearerTokenUserProvider: received '{userName}' user name. IP address: {ipaddrClaim?.Value}");
         }
+
+        public static void BearerTokenUserProviderEmailReceived(this ILogger logger, string email)
+        {
+            logger.LogInformation($"BearerTokenUserProvider: received '{email}' email.");
+        }
     }
 }
