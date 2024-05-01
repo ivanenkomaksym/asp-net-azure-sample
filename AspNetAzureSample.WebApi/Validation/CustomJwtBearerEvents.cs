@@ -26,7 +26,13 @@ namespace AspNetAzureSample.Validation
         public override Task TokenValidated(TokenValidatedContext context)
         {
             var principal = context.Principal;
+            if (principal == null)
+                return base.TokenValidated(context);
+
             var issuerValue = principal.GetIssuerValue();
+            if (issuerValue == null)
+                return base.TokenValidated(context);
+
             Logger.TokenValidationSucceeded(principal.GetObjectIdentifierValue(), issuerValue, principal.GetScopeValue(), principal.GetRoleValue(), principal.GetRolesValue());
             return base.TokenValidated(context);
         }

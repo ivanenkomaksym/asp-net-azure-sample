@@ -65,7 +65,8 @@ else
 
 services.AddAuthorization(opts =>
 {
-    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureadOptions.RoleName));
+    if (azureadOptions.RoleName != null)
+        opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureadOptions.RoleName));
 });
 
 services.AddControllersWithViews(options =>
@@ -143,12 +144,10 @@ app.UseSwaggerUI(c =>
     c.OAuthRealm(azureadOptions.ClientID);
     c.OAuthScopeSeparator(" ");
     // Needed for AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize")
-    c.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "resource", azureadOptions.ClientID } };
+    if (azureadOptions.ClientID != null)
+        c.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "resource", azureadOptions.ClientID } };
 });
 
-app.UseEndpoints(endpoints =>
-{
-    endpoints.MapControllers();
-});
+app.MapControllers();
 
 app.Run();

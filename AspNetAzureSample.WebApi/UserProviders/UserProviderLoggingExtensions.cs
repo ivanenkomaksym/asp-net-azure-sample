@@ -4,7 +4,7 @@ namespace AspNetAzureSample.UserProviders
 {
     internal static class UserProviderLoggingExtensions
     {
-        public static void DefaultUserProviderUserNameReceived(this ILogger logger, string userName)
+        public static void DefaultUserProviderUserNameReceived(this ILogger logger, string? userName)
         {
             logger.LogInformation($"DefaultUserProvider: received '{userName}' user name.");
         }

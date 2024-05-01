@@ -11,10 +11,10 @@
         {
             var user = httpContext.User;
 
-            if (user.Identity.IsAuthenticated)
+            if (user.Identity != null && user.Identity.IsAuthenticated)
             {
                 Logger.DefaultUserProviderUserNameReceived(user.Identity.Name);
-                return user.Identity.Name;
+                return user.Identity.Name ?? string.Empty;
             }
 
             Logger.DefaultUserProviderEnvironmentUserNameReceived(Environment.UserName);

@@ -7,9 +7,9 @@ namespace AspNetAzureSample.Validation
         public static string ValidateSpecificIssuers(string issuer,
                                                      SecurityToken securityToken,
                                                      TokenValidationParameters validationParameters,
-                                                     IEnumerable<string> validIssuers)
+                                                     IEnumerable<string>? validIssuers)
         {
-            if (validIssuers.Any(item => issuer.Contains(item)))
+            if (validIssuers != null && validIssuers.Any(item => issuer.Contains(item)))
             {
                 return issuer;
             }

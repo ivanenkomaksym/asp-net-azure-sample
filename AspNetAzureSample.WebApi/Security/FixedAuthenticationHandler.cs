@@ -15,9 +15,8 @@ namespace AspNetAzureSample.Security
         public FixedAuthenticationHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
                                           ILoggerFactory logger,
                                           UrlEncoder encoder,
-                                          ISystemClock clock,
                                           IConfiguration configuration)
-            : base(options, logger, encoder, clock)
+            : base(options, logger, encoder)
         {
             Configuration = configuration;
         }
@@ -33,7 +32,8 @@ namespace AspNetAzureSample.Security
             var azureadOptions = new AzureADOptions();
             Configuration.Bind(AzureADOptions.Name, azureadOptions);
 
-            claims.Add(new Claim(ClaimTypes.Role, azureadOptions.RoleName));
+            if (azureadOptions.RoleName != null)
+                claims.Add(new Claim(ClaimTypes.Role, azureadOptions.RoleName));
 
             var identity = new ClaimsIdentity(claims, AuthenticationScheme);
             var principal = new ClaimsPrincipal(identity);

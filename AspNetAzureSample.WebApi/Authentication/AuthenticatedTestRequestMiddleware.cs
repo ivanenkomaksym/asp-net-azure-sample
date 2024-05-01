@@ -23,8 +23,8 @@ namespace AspNetAzureSample.Authentication
         {
             if (context.Request.Headers.Keys.Contains(TestingNameHeader))
             {
-                var name = context.Request.Headers[TestingNameHeader].First();
-                var id = context.Request.Headers.Keys.Contains(TestingNameIdHeader) ? context.Request.Headers[TestingNameIdHeader].First() : "";
+                var name = context.Request.Headers[TestingNameHeader].First() ?? string.Empty;
+                var id = context.Request.Headers.Keys.Contains(TestingNameIdHeader) ? context.Request.Headers[TestingNameIdHeader].First() ?? string.Empty : string.Empty;
 
                 var claimsIdentity = new ClaimsIdentity(new List<Claim>
                 {

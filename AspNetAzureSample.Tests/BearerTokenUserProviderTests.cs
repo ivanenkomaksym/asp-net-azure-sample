@@ -99,6 +99,6 @@ namespace AspNetAzureSample.Tests
             return jwtToken;
         }
 
-        private const string Secret = "4777E6A4592BF1C9D5E62BFB41A77";
+        private const string Secret = "bYIJTgsdEGjoAWOkNAOez9UgTQicR9lP";
     }
 }

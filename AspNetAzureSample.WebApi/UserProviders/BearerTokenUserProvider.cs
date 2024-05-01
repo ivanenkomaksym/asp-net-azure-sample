@@ -26,12 +26,12 @@ namespace AspNetAzureSample.UserProviders
             var encoded = authorizationHeader.Substring(7); // Skip "Bearer "
             var token = new JwtSecurityToken(encoded);
 
-            var nameClaim = token.Claims.FirstOrDefault(claim => claim.Type == "unique_name", null);
-            var emailClaim = token.Claims.FirstOrDefault(claim => claim.Type == "email", null);
+            var nameClaim = token.Claims.FirstOrDefault(claim => claim?.Type == "unique_name", null);
+            var emailClaim = token.Claims.FirstOrDefault(claim => claim?.Type == "email", null);
 
             if (nameClaim != null)
             {
-                var ipaddrClaim = token.Claims.FirstOrDefault(claim => claim.Type == "ipaddr", null);
+                var ipaddrClaim = token.Claims.FirstOrDefault(claim => claim?.Type == "ipaddr", null);
 
                 Logger.BearerTokenUserProviderUserNameReceived(nameClaim.Value, ipaddrClaim);
 
