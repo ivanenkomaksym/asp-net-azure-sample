@@ -5,6 +5,11 @@
 
 import { LogLevel } from "@azure/msal-browser";
 
+export const gsiConfig = {
+    client_id: '438557524836-iule8uso69s7n6jsho4q3j2i5umh0qp0.apps.googleusercontent.com',
+    auto_select: false // automatically sign in, see: https://developers.google.com/identity/gsi/web/guides/automatic-sign-in-sign-out
+}
+
 /**
  * Configuration object to be passed to MSAL instance on creation. 
  * For a full list of MSAL.js configuration parameters, visit:
@@ -13,8 +18,8 @@ import { LogLevel } from "@azure/msal-browser";
 
 export const msalConfig = {
     auth: {
-        clientId: "Enter_the_Application_Id_Here",
-        authority: "https://login.microsoftonline.com/Enter_the_Tenant_Info_Here",
+        clientId: "ea684d3c-e084-49b8-a429-5075aff9d32b",
+        authority: "https://login.microsoftonline.com/6956efa6-895b-430f-b07b-45feb79f24eb",
         redirectUri: "http://localhost:3000",
     },
     cache: {

@@ -1,0 +1,37 @@
+.mainNav{
+    color:white;
+    background-color: black;
+    display: flex;
+    justify-content: space-between;
+    padding:50px 100px;
+}
+
+.rightSideNav{
+    display: flex;
+    align-items: center;
+}
+
+.rightSideNav i{
+    font-size: 30px;
+    margin-right: 10px;
+}
+
+.container2{
+    display: flex;
+}
+.linkBTN{
+    color:rgba(255,255,255,.5);
+    text-decoration: none;
+}
+
+.linkBTN:hover{
+    color:rgba(255,255,255,.5);
+    text-decoration: underline;
+}
+
+
+.or{
+    display: inline-block;
+    margin-left: 3px;
+    margin-right: 3px;
+}
