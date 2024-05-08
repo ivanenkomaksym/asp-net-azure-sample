@@ -12,6 +12,8 @@ function Nav(props) {
         setAuthenticated] = useState(false)
 
     useEffect(() => {
+        console.log("Nav::useEffect ", JSON.stringify(props, null, 2));
+
         if (props.auth.authData) {
             setAuthenticated(true)
         } else {
@@ -26,6 +28,9 @@ function Nav(props) {
     }
     return (
         <nav className={NavStyles.mainNav}>
+            <div className={NavStyles.container2}>
+                <Link className={`d-block ${NavStyles.linkBTN}`} to="/">Home</Link>
+            </div>
             <div>
                 {authenticated ?
                  <div className={NavStyles.rightSideNav}>
