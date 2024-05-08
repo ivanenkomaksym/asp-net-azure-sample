@@ -3,31 +3,47 @@ import { Link,useNavigate } from "react-router-dom";
 import LoginStyles from "./Login.module.css"
 import {useGoogleLogin} from '@react-oauth/google';
 import {useDispatch} from 'react-redux';
-import {signinGoogle, signin} from "../../redux/actions/auth";
+import {signinGoogle, signin, signinMicrosoft} from "../../redux/actions/auth";
+import { useMsal } from "@azure/msal-react";
+import { loginRequest } from "../../authConfig";
 
 function Login() {
-    const [email,setEmail] = useState("");
-    const [password,setPassword] = useState("");
+    const [email, setEmail] = useState("");
+    const [password, setPassword] = useState("");
 
-    const navigate = useNavigate ()
-    const dispatch = useDispatch()
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
 
+    // Google login
 
     function handleGoogleLoginSuccess(tokenResponse) {
-
         const accessToken = tokenResponse.access_token;
         console.log("accessToken: ", accessToken);
-
-        dispatch(signinGoogle(accessToken,navigate))
+        dispatch(signinGoogle(accessToken, navigate));
     }
-    const login = useGoogleLogin({onSuccess: handleGoogleLoginSuccess});
+    
+    const googleLogin = useGoogleLogin({ onSuccess: handleGoogleLoginSuccess });
 
-    function handleSubmit(e){
+    // Microsoft login
+    const { instance } = useMsal();
+
+    const microsoftLogin = (loginType) => {
+        instance.loginPopup(loginRequest)
+            .then(response => {
+                // Handle successful login response
+                console.log("Microsoft login successful:", response);
+                dispatch(signinMicrosoft(response, navigate));
+            }).catch(e => {
+                console.log(e);
+        });
+    }
+
+    // Function to handle form submission
+    function handleSubmit(e) {
         e.preventDefault();
-        if(email !== "" && password !== ""){
-            dispatch(signin({email,password}, navigate))
+        if (email !== "" && password !== "") {
+            dispatch(signin({ email, password }, navigate));
         }
-
     }
 
     return (
@@ -37,12 +53,12 @@ function Login() {
 
                 <div className={LoginStyles.inputContainer}>
                     <label>EMAIL</label>
-                    <input onChange={e=> setEmail(e.target.value)} placeholder="enter your email" type="email"/>
+                    <input onChange={e => setEmail(e.target.value)} placeholder="enter your email" type="email" />
                 </div>
 
                 <div className={LoginStyles.inputContainer}>
                     <label>PASSWORD</label>
-                    <input onChange={e=> setPassword(e.target.value)} placeholder="enter your password" type="password"/>
+                    <input onChange={e => setPassword(e.target.value)} placeholder="enter your password" type="password" />
                 </div>
 
                 <div className={LoginStyles.forgetmeContainer}>
@@ -56,16 +72,18 @@ function Login() {
 
                 <button onClick={handleSubmit} className={LoginStyles.loginBTN}>LOGIN</button>
                 <span className={LoginStyles.or}>or</span>
-                 <button onClick={() => login()} className={LoginStyles.googleBTN}>
-                    <i class="fa-brands fa-google"></i>  Sign in with google</button>
-                
-                    
-                    <span className={LoginStyles.notreg}>Not registered yet?  <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
-                    
-            </div>
+                <button onClick={() => googleLogin()} className={LoginStyles.googleBTN}>
+                    <i class="fa-brands fa-google"></i>  Sign in with Google
+                </button>
+                <p/>
+                <button onClick={microsoftLogin} className={LoginStyles.microsoftBTN}>
+                    Sign in with Microsoft
+                </button>
+                <span className={LoginStyles.notreg}>Not registered yet? <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
 
+            </div>
         </div>
-    )
+    );
 }
 
 export default Login;

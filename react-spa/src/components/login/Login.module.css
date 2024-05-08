@@ -86,6 +86,22 @@
 
 }
 
+/* Styles for Microsoft button */
+.microsoftBTN {
+    padding: 15px;
+    width: 100%;
+    border: 0px none;
+    background-color: #0078d4; /* Microsoft Blue */
+    border-radius: .5rem;
+    color: white;
+    transition: all 0.4s;
+}
+
+.microsoftBTN:hover {
+    transition: all 0.4s;
+    background-color: #005a9e; /* Darker Microsoft Blue on hover */
+}
+
 .singupBTN{
     color:black;
 }

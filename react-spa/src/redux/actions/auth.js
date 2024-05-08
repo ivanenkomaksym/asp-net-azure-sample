@@ -1,4 +1,4 @@
-import {AUTH} from "../const/actionsTypes"
+import {AUTH, GOOGLE_IP, MICROSOFT_IP} from "../const/actionsTypes"
 
 import axios from 'axios';
 import User from "../../models/user"
@@ -44,13 +44,28 @@ export const signinGoogle = (accessToken, navigate) => async (dispatch)=>{
 
                 const user = new User(firstName, lastName, email, picture);
 
-                dispatch({type : AUTH, data: user})
+                dispatch({type : AUTH, identityProviderType: GOOGLE_IP, data: user})
                 navigate("/")
             })
             .catch(err => {
                 console.log(`Invalid access token! Error: ${err}`);
             })
 
+        navigate("/")
+    }catch(err){
+        console.log(err);
+    }
+}
+
+export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
+    console.log("auth.signinMicrosoft");
+
+    try{
+        console.log(`Response:${response.accessToken}`);
+
+        const user = {}
+        
+        dispatch({type : AUTH, identityProviderType: MICROSOFT_IP, data: user})
         navigate("/")
     }catch(err){
         console.log(err);
