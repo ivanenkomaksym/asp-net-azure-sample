@@ -1,5 +1,7 @@
 import {AUTH, GOOGLE_IP, MICROSOFT_IP} from "../const/actionsTypes"
 
+import { callMsGraph } from '../../graph';
+
 import axios from 'axios';
 import User from "../../models/user"
 
@@ -42,9 +44,9 @@ export const signinGoogle = (accessToken, navigate) => async (dispatch)=>{
                 console.log("email: ", email);
                 console.log("picture: ", picture); 
 
-                const user = new User(firstName, lastName, email, picture);
+                const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
 
-                dispatch({type : AUTH, identityProviderType: GOOGLE_IP, data: user})
+                dispatch({type : AUTH, data: user})
                 navigate("/")
             })
             .catch(err => {
@@ -63,10 +65,19 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
     try{
         console.log(`Response:${response.accessToken}`);
 
-        const user = {}
-        
-        dispatch({type : AUTH, identityProviderType: MICROSOFT_IP, data: user})
-        navigate("/")
+        callMsGraph(response.accessToken).then((response) => {
+            console.log("callMsGraph response:", JSON.stringify(response, null, 2));
+            const { givenName: firstName, surname: lastName, userPrincipalName: email } = response;
+                
+            console.log("firstName: ", firstName);
+            console.log("lastName: ", lastName);
+            console.log("email: ", email);
+
+            const user = new User(firstName, lastName, email, null, MICROSOFT_IP);
+
+            dispatch({type : AUTH, data: user})
+            navigate("/")
+        });
     }catch(err){
         console.log(err);
     }

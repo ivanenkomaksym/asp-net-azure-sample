@@ -14,6 +14,7 @@ function Profile() {
                     <p>Last Name: {userInfo.lastName}</p>
                     <p>Email: {userInfo.email}</p>
                     <img src={userInfo.picture} alt="User Profile" />
+                    <p>Identity Provider: {userInfo.identityProvider}</p>
                 </div>
             )}
             {/* Display a message if user information is not available */}
