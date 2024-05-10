@@ -70,3 +70,13 @@ export const loginRequest = {
 export const graphConfig = {
     graphMeEndpoint: "https://graph.microsoft.com/v1.0/me",
 };
+
+/**
+ * Add here the scopes to request when obtaining an access token for MS Graph API. For more information, see:
+ * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
+ */
+export const weatherForecastTokenRequest = {
+    scopes: ["0a870d70-60dc-46ef-b913-58942a5ba00d/access_as_user"],
+    forceRefresh: false, // Set this to "true" to skip a cached token and go to the server to get a new token
+    prompt: "consent"
+};

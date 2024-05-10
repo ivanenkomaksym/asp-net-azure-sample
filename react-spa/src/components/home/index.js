@@ -3,6 +3,9 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import * as api from "../../api/index"
 
+import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
+import { weatherForecastTokenRequest, msalConfig } from '../../authConfig';
+
 function Home() {
     const [userData, setUserData] = useState(null);
     const [weatherData, setWeatherData] = useState(null);
@@ -20,11 +23,58 @@ function Home() {
         }
     }, [location]);
 
+    async function getTokenPopup(request) {
+        const myMSALObj = new PublicClientApplication(msalConfig);
+        await myMSALObj.initialize();
+
+        let username = "";
+        const currentAccounts = myMSALObj.getAllAccounts();
+        if (currentAccounts.length === 0) {
+            return;
+        } else if (currentAccounts.length > 1) {
+            // Add choose account code here
+            console.warn("Multiple accounts detected.");
+        } else if (currentAccounts.length === 1) {
+            username = currentAccounts[0].username;
+        }
+
+        request.account = myMSALObj.setActiveAccount(username);
+
+        console.log("request: ", JSON.stringify(request, null, 2));
+
+        return myMSALObj.acquireTokenSilent(request)
+            .catch(error => {
+                console.warn("silent token acquisition fails. acquiring token using popup");
+                if (error instanceof InteractionRequiredAuthError) {
+                    // fallback to interaction when silent call fails
+                    return myMSALObj.acquireTokenPopup(request)
+                        .then(tokenResponse => {
+                            console.log(tokenResponse);
+                            return tokenResponse;
+                        }).catch(error => {
+                            console.error(error);
+                        });
+                } else {
+                    console.warn(error);
+                }
+            });
+    }
+
+    async function weatherForecast() {
+        return await getTokenPopup(weatherForecastTokenRequest)
+            .then(response => {
+                api.weatherForecast(response.accessToken).then((result) => {
+                    console.log("data: ", JSON.stringify(result, null, 2));
+                    setWeatherData(result);
+                });
+            }).catch(error => {
+                console.error(error);
+            });
+    }
+
     async function handleGetWeather() {
         try {
-            const response = await api.weatherForecast()
-            console.log("data: ", JSON.stringify(response.data, null, 2));
-            setWeatherData(response.data);
+            weatherForecast();
         } catch (error) {
             console.error("Error fetching weather data:", error);
         }

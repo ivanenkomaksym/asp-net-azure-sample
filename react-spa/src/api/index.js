@@ -1,13 +1,13 @@
 import axios from "axios"
 
-const API = axios.create({baseURL:"http://localhost:5000"})
+export async function weatherForecast(accessToken) {
+    const instance = axios.create({
+        baseURL: "http://localhost:5000",
+        headers: {
+            'Authorization': `Bearer ${accessToken}`
+        }
+    });
 
-API.interceptors.request.use((req)=>{
-    if(localStorage.getItem("user_info")){
-        req.headers.Authorization = ``
-    }
-
-    return req;
-})
-
-export const weatherForecast = () => API.get("/WeatherForecast")
+    const response = await instance.get("/WeatherForecast");
+    return response.data;
+}
