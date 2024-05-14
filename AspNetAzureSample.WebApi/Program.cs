@@ -3,18 +3,19 @@ using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.UserProviders;
 using AspNetAzureSample.Validation;
-using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization; 
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.AddAzureWebAppDiagnostics();
+builder.Host.UseNLog();
 
 builder.Services.AddRazorPages();
 
@@ -24,6 +25,9 @@ var services = builder.Services;
 // Add services to the container.
 var azureadOptions = new AzureADOptions();
 configuration.Bind(AzureADOptions.Name, azureadOptions);
+
+var googleOptions = new GoogleOptions();
+configuration.Bind(GoogleOptions.Name, googleOptions);
 
 var swaggerOptions = new SwaggerOptions();
 configuration.Bind(SwaggerOptions.Name, swaggerOptions);
@@ -58,12 +62,34 @@ if (azureadOptions.Enable)
                 configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
             });
 }
-else
+else if (googleOptions.Enable)
 {
-    services.AddSingleton<IUserProvider, BearerTokenUserProvider>();
+    // Works - cookie-based authn
+    //services.AddAuthentication(options =>
+    //{
+    //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+    //    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    //}).AddCookie()
+    //.AddGoogle(options =>
+    //{
+    //    options.ClientId = configuration["Google:ClientId"] ?? string.Empty;
+    //    options.ClientSecret = configuration["Google:ClientSecret"] ?? string.Empty;
+    //});
+    //services.AddSingleton<IUserProvider, DefaultUserProvider>();
 
-    services.AddAuthentication(FixedAuthenticationHandler.AuthenticationScheme)
-            .AddScheme<AuthenticationSchemeOptions, FixedAuthenticationHandler>(FixedAuthenticationHandler.AuthenticationScheme, null);
+    services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+    }).AddJwtBearer(options =>
+    {
+        options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
+        options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+    });
+
+    services.AddSingleton<IUserProvider, DefaultUserProvider>();
 }
 
 services.AddAuthorization(opts =>
@@ -119,6 +145,14 @@ builder.Services.AddSwaggerGen(c =>
 });
 
 var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
 
 app.UseStaticFiles();
 
