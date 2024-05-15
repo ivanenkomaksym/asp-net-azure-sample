@@ -25,8 +25,8 @@ export const signin = (data, navigate) => async (dispath) =>{
     }
 }
 
-export const signinGoogle = (accessToken, navigate) => async (dispatch)=>{
-    console.log("auth.signinGoogle");
+export const signinGoogleWithAccessToken = (accessToken, navigate) => async (dispatch)=>{
+    console.log("auth.signinGoogleWithAccessToken");
 
     try{
         axios
@@ -35,6 +35,36 @@ export const signinGoogle = (accessToken, navigate) => async (dispatch)=>{
                 "Authorization": `Bearer ${accessToken}`
             }
             })
+            .then(async response => {
+                // Extract user information from the response
+                const { given_name: firstName, family_name: lastName, email, picture } = response.data;
+                
+                console.log("firstName: ", firstName);
+                console.log("lastName: ", lastName);
+                console.log("email: ", email);
+                console.log("picture: ", picture); 
+
+                const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
+
+                dispatch({type : AUTH, data: user})
+                navigate("/")
+            })
+            .catch(err => {
+                console.log(`Invalid access token! Error: ${err}`);
+            })
+
+        navigate("/")
+    }catch(err){
+        console.log(err);
+    }
+}
+
+export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=>{
+    console.log("auth.signinGoogleWithIdToken");
+
+    try{
+        axios
+            .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${id_token}`)
             .then(async response => {
                 // Extract user information from the response
                 const { given_name: firstName, family_name: lastName, email, picture } = response.data;

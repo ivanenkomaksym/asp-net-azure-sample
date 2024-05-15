@@ -1,11 +1,12 @@
-import React, {useState} from "react";
-import { Link,useNavigate } from "react-router-dom";
+import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import LoginStyles from "./Login.module.css"
-import {useGoogleLogin} from '@react-oauth/google';
-import {useDispatch} from 'react-redux';
-import {signinGoogle, signin, signinMicrosoft} from "../../redux/actions/auth";
+import { useGoogleLogin } from '@react-oauth/google';
+import { useDispatch } from 'react-redux';
+import { signinGoogleWithAccessToken, signinGoogleWithIdToken, signin, signinMicrosoft } from "../../redux/actions/auth";
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../../authConfig";
+import { GoogleLogin } from '@react-oauth/google';
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -17,11 +18,12 @@ function Login() {
     // Google login
 
     function handleGoogleLoginSuccess(tokenResponse) {
+        console.log("GoogleLoginSuccess. Response: ", JSON.stringify(tokenResponse, null, 2));
         const accessToken = tokenResponse.access_token;
         console.log("accessToken: ", accessToken);
-        dispatch(signinGoogle(accessToken, navigate));
+        dispatch(signinGoogleWithAccessToken(accessToken, navigate));
     }
-    
+
     const googleLogin = useGoogleLogin({ onSuccess: handleGoogleLoginSuccess });
 
     // Microsoft login
@@ -35,7 +37,7 @@ function Login() {
                 dispatch(signinMicrosoft(response, navigate));
             }).catch(e => {
                 console.log(e);
-        });
+            });
     }
 
     // Function to handle form submission
@@ -73,9 +75,20 @@ function Login() {
                 <button onClick={handleSubmit} className={LoginStyles.loginBTN}>LOGIN</button>
                 <span className={LoginStyles.or}>or</span>
                 <button onClick={() => googleLogin()} className={LoginStyles.googleBTN}>
-                    <i class="fa-brands fa-google"></i>  Sign in with Google
+                    <i class="fa-brands fa-google"></i>  Sign in with Google Access Token
                 </button>
-                <p/>
+                <GoogleLogin
+                    onSuccess={credentialResponse => {
+                        console.log(credentialResponse);
+                        dispatch(signinGoogleWithIdToken(credentialResponse.credential, navigate));
+                    }}
+
+                    onError={() => {
+                        console.log('Login Failed');
+                    }}
+                    useOneTap
+                />
+                <p />
                 <button onClick={microsoftLogin} className={LoginStyles.microsoftBTN}>
                     Sign in with Microsoft
                 </button>
