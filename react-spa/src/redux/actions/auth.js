@@ -36,18 +36,7 @@ export const signinGoogleWithAccessToken = (accessToken, navigate) => async (dis
             }
             })
             .then(async response => {
-                // Extract user information from the response
-                const { given_name: firstName, family_name: lastName, email, picture } = response.data;
-                
-                console.log("firstName: ", firstName);
-                console.log("lastName: ", lastName);
-                console.log("email: ", email);
-                console.log("picture: ", picture); 
-
-                const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
-
-                dispatch({type : AUTH, data: user})
-                navigate("/")
+                handleGoogleResponse(response, dispatch, navigate);
             })
             .catch(err => {
                 console.log(`Invalid access token! Error: ${err}`);
@@ -66,18 +55,7 @@ export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=
         axios
             .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${id_token}`)
             .then(async response => {
-                // Extract user information from the response
-                const { given_name: firstName, family_name: lastName, email, picture } = response.data;
-                
-                console.log("firstName: ", firstName);
-                console.log("lastName: ", lastName);
-                console.log("email: ", email);
-                console.log("picture: ", picture); 
-
-                const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
-
-                dispatch({type : AUTH, data: user})
-                navigate("/")
+                handleGoogleResponse(response, dispatch, navigate);
             })
             .catch(err => {
                 console.log(`Invalid access token! Error: ${err}`);
@@ -87,6 +65,21 @@ export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=
     }catch(err){
         console.log(err);
     }
+}
+
+function handleGoogleResponse(response, dispatch, navigate) {
+    // Extract user information from the response
+    const { given_name: firstName, family_name: lastName, email, picture } = response.data;
+
+    console.log("firstName: ", firstName);
+    console.log("lastName: ", lastName);
+    console.log("email: ", email);
+    console.log("picture: ", picture);
+
+    const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
+
+    dispatch({ type: AUTH, data: user });
+    navigate("/");
 }
 
 export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
