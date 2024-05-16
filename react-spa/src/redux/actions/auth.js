@@ -36,7 +36,7 @@ export const signinGoogleWithAccessToken = (accessToken, navigate) => async (dis
             }
             })
             .then(async response => {
-                handleGoogleResponse(response, dispatch, navigate);
+                handleGoogleResponse(response, null, dispatch, navigate);
             })
             .catch(err => {
                 console.log(`Invalid access token! Error: ${err}`);
@@ -55,7 +55,7 @@ export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=
         axios
             .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${id_token}`)
             .then(async response => {
-                handleGoogleResponse(response, dispatch, navigate);
+                handleGoogleResponse(response, id_token, dispatch, navigate);
             })
             .catch(err => {
                 console.log(`Invalid access token! Error: ${err}`);
@@ -67,7 +67,7 @@ export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=
     }
 }
 
-function handleGoogleResponse(response, dispatch, navigate) {
+function handleGoogleResponse(response, id_token, dispatch, navigate) {
     // Extract user information from the response
     const { given_name: firstName, family_name: lastName, email, picture } = response.data;
 
@@ -76,7 +76,7 @@ function handleGoogleResponse(response, dispatch, navigate) {
     console.log("email: ", email);
     console.log("picture: ", picture);
 
-    const user = new User(firstName, lastName, email, picture, GOOGLE_IP);
+    const user = new User(firstName, lastName, email, picture, GOOGLE_IP, id_token);
 
     dispatch({ type: AUTH, data: user });
     navigate("/");
@@ -96,7 +96,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             console.log("lastName: ", lastName);
             console.log("email: ", email);
 
-            const user = new User(firstName, lastName, email, null, MICROSOFT_IP);
+            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, null);
 
             dispatch({type : AUTH, data: user})
             navigate("/")
