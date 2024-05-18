@@ -1,23 +1,20 @@
 import React from "react";
-import NavStyles from "./Nav.module.css"
 import {Link} from "react-router-dom"
 import {connect} from "react-redux"
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux"
 import {LOGOUT} from "../../redux/const/actionsTypes"
 import { useLocation } from 'react-router-dom'
+import { useNavigate  } from 'react-router-dom';
 
 function Nav(props) {
     const dispatch = useDispatch();
-    
     const [userData, setUserData] = useState(null);
     const location = useLocation();
+    const navigate = useNavigate (); // Get the history object
 
     useEffect(() => {
-        // Assuming loadUser is a function that loads user data
         const localUser = JSON.parse(localStorage.getItem("user_info"));
-
-        console.log("localUser: ", localUser);
         if (localUser) {
             setUserData(localUser);
         } else {
@@ -26,48 +23,45 @@ function Nav(props) {
     }, [location]);
 
     function handleLogOut(e) {
-        e.preventDefault()
-
-        dispatch({type: LOGOUT})
+        e.preventDefault();
+        dispatch({ type: LOGOUT });
+        navigate('/'); // Navigate to the home page after logging out
     }
+
     return (
-        <nav className={NavStyles.mainNav}>
-            <div className={NavStyles.container2}>
-                <Link className={`d-block ${NavStyles.linkBTN}`} to="/">Home</Link>
+        <nav className="mainNav">
+            <div className="navContainer">
+                <Link className="linkBTN" to="/">Home</Link>
             </div>
             <div>
-                {userData ?
-                 <div className={NavStyles.rightSideNav}>
-                 <i class="fa-solid fa-user"></i>
-                 <div>
-                     <span className="d-blcok">Account</span>
-                     <div className={NavStyles.container2}>
-                         <Link className={`d-block ${NavStyles.linkBTN}`} to="/account/profile">Profile</Link>
-                         <span className={NavStyles.or}>or</span>
-                         <Link onClick={handleLogOut} className={NavStyles.linkBTN} to="/">Logout</Link>
-                     </div>
-                 
-                 </div>
-             </div>
-                 : 
-                 <div className={NavStyles.rightSideNav}>
-                 <i class="fa-solid fa-user"></i>
-                 <div>
-                     <span className="d-blcok">Account</span>
-                     <div className={NavStyles.container2}>
-                         <Link className={`d-block ${NavStyles.linkBTN}`} to="/account/login">Login</Link>
-                         <span className={NavStyles.or}>or</span>
-                         <Link className={NavStyles.linkBTN} to="account/signup">Singup</Link>
-                     </div>
-                 
-                 </div>
-             </div>
-                }
-              
+                {userData ? (
+                    <div className="rightSideNav">
+                        <i className="fa-solid fa-user"></i>
+                        <div>
+                            <span className="accountText">Account</span>
+                            <div className="navContainer">
+                                <Link className="linkBTN" to="/account/profile">Profile</Link>
+                                <span className="orText">or</span>
+                                <Link onClick={handleLogOut} className="linkBTN" to="/">Logout</Link>
+                            </div>
+                        </div>
+                    </div>
+                ) : (
+                    <div className="rightSideNav">
+                        <i className="fa-solid fa-user"></i>
+                        <div>
+                            <span className="accountText">Account</span>
+                            <div className="navContainer">
+                                <Link className="linkBTN" to="/account/login">Login</Link>
+                                <span className="orText">or</span>
+                                <Link className="linkBTN" to="/account/signup">Signup</Link>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
-
         </nav>
-    )
+    );
 }
 
 const mapStateToProps = state => ({auth: state.auth});

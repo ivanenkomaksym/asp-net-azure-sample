@@ -13,56 +13,74 @@ code {
 }
 
 .container {
-  max-width: 800px;
-  margin: 0 auto;
   padding: 20px;
+  max-width: 800px;
+  margin: auto;
+  font-family: Arial, sans-serif;
 }
 
 .getWeatherButton {
   padding: 10px 20px;
-  background-color: #4caf50;
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 5px;
-  font-size: 16px;
   cursor: pointer;
+  margin-bottom: 20px;
 }
 
 .getWeatherButton:hover {
   background-color: #45a049;
 }
 
-.weatherTitle {
-  font-size: 24px;
+.weatherData {
   margin-top: 20px;
+}
+
+.weatherTitle {
+  text-align: center;
+  margin-bottom: 20px;
 }
 
 .forecastTable {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 20px;
 }
 
-.forecastTable th,
-.forecastTable td {
+.forecastTable th, .forecastTable td {
   border: 1px solid #ddd;
   padding: 8px;
+  text-align: left;
 }
 
 .forecastTable th {
   background-color: #f2f2f2;
-}
-
-.forecastTable tbody tr:nth-child(even) {
-  background-color: #f2f2f2;
-}
-
-.forecastTable tbody tr:hover {
-  background-color: #ddd;
+  font-weight: bold;
 }
 
 .errorContainer {
   margin-top: 20px;
+  color: red;
+}
+
+.welcomeMessage {
+  text-align: center;
+  font-size: 18px;
+  margin-top: 20px;
+  padding: 20px;
+  background-color: #333;
+  color: white;
+  border-radius: 5px;
+}
+
+.welcomeMessage a {
+  color: #4CAF50;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+.welcomeMessage a:hover {
+  text-decoration: underline;
 }
 
 .errorMessage {
@@ -101,4 +119,54 @@ code {
   max-width: 100px;
   height: auto;
   border-radius: 50%;
+}
+
+.mainNav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #333;
+  padding: 10px 20px;
+  color: white;
+}
+
+.navContainer {
+  display: flex;
+  align-items: center;
+}
+
+.linkBTN {
+  color: white;
+  text-decoration: none;
+  margin: 0 10px;
+  padding: 8px 15px;
+  background-color: #444;
+  border-radius: 4px;
+  transition: background-color 0.3s;
+}
+
+.linkBTN:hover {
+  background-color: #555;
+}
+
+.rightSideNav {
+  display: flex;
+  align-items: center;
+}
+
+.accountText {
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.orText {
+  margin: 0 10px;
+  font-size: 12px;
+  color: #ccc;
+}
+
+.fa-user {
+  font-size: 18px;
+  margin-right: 10px;
 }

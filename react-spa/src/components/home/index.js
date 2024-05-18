@@ -2,6 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import * as api from "../../api/index"
+import { Link  } from 'react-router-dom';
 
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { weatherForecastTokenRequest, msalConfig } from '../../authConfig';
@@ -70,6 +71,9 @@ function Home() {
                     api.weatherForecast(response.accessToken).then((result) => {
                         console.log("data: ", JSON.stringify(result, null, 2));
                         setWeatherData(result);
+                    }).catch(error => {
+                        console.error(error);
+                        setError(error.message);
                     });
                 }).catch(error => {
                     console.error(error);
@@ -95,41 +99,62 @@ function Home() {
         }
     };
 
+    const checkTokenValidity = () => {
+        const userInfo = JSON.parse(localStorage.getItem('user_info'));
+        if (userInfo) {
+            const { expirationDate } = userInfo;
+            if (new Date(expirationDate) < new Date()) {
+                localStorage.clear();
+                return false;
+            }
+            return true;
+        }
+        return false;
+    };
+
     return (
         <div className="container">
-            {userData && (
-                <button onClick={handleGetWeather} className="getWeatherButton">
-                    Get Weather
-                </button>
-            )}
-            {weatherData && (
-                <div className="weatherData">
-                    <h2 className="weatherTitle">Weather Forecast</h2>
-                    <table className="forecastTable">
-                        <thead>
-                            <tr>
-                                <th>Date</th>
-                                <th>Temperature (°C)</th>
-                                <th>Temperature (°F)</th>
-                                <th>Summary</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {weatherData.map((forecast, index) => (
-                                <tr key={index}>
-                                    <td>{forecast.date}</td>
-                                    <td>{forecast.temperatureC}</td>
-                                    <td>{forecast.temperatureF}</td>
-                                    <td>{forecast.summary}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            )}
-            {errorMessage && (
-                <div className="errorContainer">
-                    <p className="errorMessage">{errorMessage}</p>
+            {checkTokenValidity() ? (
+                <>
+                    {userData && (
+                        <button onClick={handleGetWeather} className="getWeatherButton">
+                            Get Weather
+                        </button>
+                    )}
+                    {userData && weatherData && (
+                        <div className="weatherData">
+                            <h2 className="weatherTitle">Weather Forecast</h2>
+                            <table className="forecastTable">
+                                <thead>
+                                    <tr>
+                                        <th>Date</th>
+                                        <th>Temperature (°C)</th>
+                                        <th>Temperature (°F)</th>
+                                        <th>Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {weatherData.map((forecast, index) => (
+                                        <tr key={index}>
+                                            <td>{forecast.date}</td>
+                                            <td>{forecast.temperatureC}</td>
+                                            <td>{forecast.temperatureF}</td>
+                                            <td>{forecast.summary}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    )}
+                    {errorMessage && (
+                        <div className="errorContainer">
+                            <p className="errorMessage">{errorMessage}</p>
+                        </div>
+                    )}
+                </>
+            ) : (
+                <div className="welcomeMessage">
+                    Welcome. <Link to="/account/login">Login</Link> to continue.
                 </div>
             )}
         </div>
