@@ -5,21 +5,25 @@ import {connect} from "react-redux"
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux"
 import {LOGOUT} from "../../redux/const/actionsTypes"
+import { useLocation } from 'react-router-dom'
 
 function Nav(props) {
     const dispatch = useDispatch();
-    const [authenticated,
-        setAuthenticated] = useState(false)
+    
+    const [userData, setUserData] = useState(null);
+    const location = useLocation();
 
     useEffect(() => {
-        console.log("Nav::useEffect ", JSON.stringify(props, null, 2));
+        // Assuming loadUser is a function that loads user data
+        const localUser = JSON.parse(localStorage.getItem("user_info"));
 
-        if (props.auth.authData) {
-            setAuthenticated(true)
+        console.log("localUser: ", localUser);
+        if (localUser) {
+            setUserData(localUser);
         } else {
-            setAuthenticated(false)
+            setUserData(null);
         }
-    }, [props.auth])
+    }, [location]);
 
     function handleLogOut(e) {
         e.preventDefault()
@@ -32,7 +36,7 @@ function Nav(props) {
                 <Link className={`d-block ${NavStyles.linkBTN}`} to="/">Home</Link>
             </div>
             <div>
-                {authenticated ?
+                {userData ?
                  <div className={NavStyles.rightSideNav}>
                  <i class="fa-solid fa-user"></i>
                  <div>
