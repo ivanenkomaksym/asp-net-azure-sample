@@ -66,8 +66,15 @@ When running in this mode, attempting to access the API without proper authentic
 	* Sign in with Google Access Token
 	* Google one tap
 	* Microsoft
+
+![Alt text](docs/login.png?raw=true "Login")
+
 4. Click **Get Weather** button. It will send the request to server with corresponding bearer token.
+
+![Alt text](docs/callAPI.png?raw=true "Call API")
 5. Click **Profile** to see your profile's information retrieved from the corresponding identity provider.
+
+![Alt text](docs/profile.png?raw=true "Profile")
 
 ## References
 [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
