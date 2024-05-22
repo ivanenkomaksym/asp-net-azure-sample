@@ -5,9 +5,10 @@ This sample demonstrates how to configure ASP.NET application for:
 - Multitenant authentication (based on [Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/1-WebApp-OIDC/1-2-AnyOrg/README-1-1-to-1-2.md))
 - Swagger client application access using signed-in user
 - Application only permissions (based on [Get access without a user](https://learn.microsoft.com/en-us/graph/auth-v2-service) and [A .NET Core daemon console application calling a protected Web API with its own identity](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2/tree/master/2-Call-OwnApi))
+- Use multiple authentication schemes: AzureAD and Google
 
 ## Dependencies
-[.NET 6](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+[.NET8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
 ## How to run this sample
 1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account
@@ -58,5 +59,16 @@ dotnet run --environment Testing
 
 When running in this mode, attempting to access the API without proper authentication in Swagger or a client will be restricted. However, you can still access the API by including the header `X-Testing-Name=<username>` in the request, for instance, when using Postman at https://localhost:44321/WeatherForecast.
 
+## Multiple authentication schemes
+1. In the **appsettings.json** set **AzureAd:Enable** and **Google:Enable** to **true** and fill in **Google:ClientId**.
+2. Execute ***npm start** in **react-spa** folder to launch frontend client on http://localhost:3000.
+3. Click **Login** and choose one of the supported options:
+	* Sign in with Google Access Token
+	* Google one tap
+	* Microsoft
+4. Click **Get Weather** button. It will send the request to server with corresponding bearer token.
+5. Click **Profile** to see your profile's information retrieved from the corresponding identity provider.
+
 ## References
 [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
+[Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)
