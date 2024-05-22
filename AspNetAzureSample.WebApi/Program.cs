@@ -4,7 +4,7 @@ using AspNetAzureSample.Security;
 using AspNetAzureSample.UserProviders;
 using AspNetAzureSample.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization; 
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
@@ -40,11 +40,49 @@ var loggerFactory = LoggerFactory.Create(builder =>
 });
 
 services.AddControllers();
+services.AddSingleton<IUserProvider, DefaultUserProvider>();
 
-if (azureadOptions.Enable)
+if (azureadOptions.Enable && googleOptions.Enable)
 {
-    services.AddSingleton<IUserProvider, DefaultUserProvider>();
+    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        .AddJwtBearer(options =>
+        {
+            configuration.GetSection(AzureADOptions.Name).Bind(options);
+            options.TokenValidationParameters.IssuerValidator = (string issuer,
+                                                                    SecurityToken securityToken,
+                                                                    TokenValidationParameters validationParameters) =>
+            {
+                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
+            };
+            options.TokenValidationParameters.ValidateIssuerSigningKey = false;
+            options.TokenValidationParameters.SignatureValidator = delegate (string token, TokenValidationParameters parameters)
+            {
+                var jwt = new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token);
 
+                return jwt;
+            };
+
+            options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+        })
+        .AddJwtBearer("Google", options =>
+        {
+            options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
+            options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+        });
+
+    // Authorization
+    services.AddAuthorization(options =>
+    {
+        var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+            JwtBearerDefaults.AuthenticationScheme,
+            "Google");
+        defaultAuthorizationPolicyBuilder =
+            defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+        options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+    });
+}
+else if (azureadOptions.Enable)
+{
     services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddMicrosoftIdentityWebApi(jwtOptions =>
             {
@@ -88,8 +126,6 @@ else if (googleOptions.Enable)
         options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
         options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
     });
-
-    services.AddSingleton<IUserProvider, DefaultUserProvider>();
 }
 
 services.AddAuthorization(opts =>
@@ -167,6 +203,7 @@ app.UseCors(builder =>
 });
 
 app.UseAuthentication();
+app.UseMultiSchemeAuthentication();
 // UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
 app.UseAuthorization();
 
