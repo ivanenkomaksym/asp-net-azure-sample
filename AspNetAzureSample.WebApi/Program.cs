@@ -44,7 +44,11 @@ services.AddSingleton<IUserProvider, DefaultUserProvider>();
 
 if (azureadOptions.Enable && googleOptions.Enable)
 {
-    services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    services.AddAuthentication(options =>
+        {
+            options.DefaultScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
+            options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
+        })
         .AddJwtBearer(options =>
         {
             configuration.GetSection(AzureADOptions.Name).Bind(options);
@@ -68,6 +72,12 @@ if (azureadOptions.Enable && googleOptions.Enable)
         {
             options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
             options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+        })
+        .AddPolicyScheme(MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme,
+                         MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme,
+                         options =>
+        {
+            options.SelectDefaultSchemeForCurrentRequest();
         });
 
     // Authorization
@@ -165,7 +175,7 @@ builder.Services.AddSwaggerGen(c =>
             }
         });
 
-        c.AddSecurityRequirement(new OpenApiSecurityRequirement() 
+        c.AddSecurityRequirement(new OpenApiSecurityRequirement()
         {
             {
                 new OpenApiSecurityScheme {
@@ -175,7 +185,7 @@ builder.Services.AddSwaggerGen(c =>
                     },
                 },
                 new List <string> {}
-            } 
+            }
         });
     }
 });
@@ -203,7 +213,6 @@ app.UseCors(builder =>
 });
 
 app.UseAuthentication();
-app.UseMultiSchemeAuthentication();
 // UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
 app.UseAuthorization();
 
