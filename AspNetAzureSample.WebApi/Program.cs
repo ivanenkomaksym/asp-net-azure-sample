@@ -1,11 +1,15 @@
 using AspNetAzureSample.Authentication;
 using AspNetAzureSample.Configuration;
+using AspNetAzureSample.Extensions;
+using AspNetAzureSample.Models.Identity;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.UserProviders;
 using AspNetAzureSample.Validation;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -38,6 +42,21 @@ var loggerFactory = LoggerFactory.Create(builder =>
     builder.AddConsole();
     builder.SetMinimumLevel(LogLevel.Information);
 });
+
+services.AddDbContext<ApplicationContext>(opts =>
+    opts.UseMySQL(configuration.GetConnectionString("sqlConnection")));
+
+services.AddIdentity<User, IdentityRole>(opt =>
+{
+    opt.Password.RequiredLength = 7;
+    opt.Password.RequireDigit = false;
+    opt.Password.RequireUppercase = false;
+
+    opt.User.RequireUniqueEmail = true;
+})
+ .AddEntityFrameworkStores<ApplicationContext>();
+
+services.AddAutoMapper(typeof(Program));
 
 services.AddControllers();
 services.AddSingleton<IUserProvider, DefaultUserProvider>();
@@ -233,4 +252,4 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 
-app.Run();
+app.MigrateDatabase().Run();
