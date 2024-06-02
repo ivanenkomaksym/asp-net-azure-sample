@@ -5,7 +5,7 @@ VisualStudioVersion = 17.2.32630.192
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetAzureSample.WebApi", "AspNetAzureSample.WebApi\AspNetAzureSample.WebApi.csproj", "{B1BD5E0A-13D3-4081-9482-4D3FE8DCDA47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetAzureSample.Tests", "AspNetAzureSample.Tests\AspNetAzureSample.Tests.csproj", "{E5B8E59D-DADB-496E-A17F-5BFEF0B621B3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "AspNetAzureSample.Tests", "AspNetAzureSample.Tests\AspNetAzureSample.Tests.csproj", "{E5B8E59D-DADB-496E-A17F-5BFEF0B621B3}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

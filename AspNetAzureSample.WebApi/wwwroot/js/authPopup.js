@@ -39,17 +39,35 @@ function handleResponse(response) {
 }
 
 function signIn() {
+    // Display a dialog or dropdown menu for the user to choose the identity provider
+    const selectedProvider = prompt("Select Identity Provider:\n1. Microsoft\n2. Google");
 
-    /**
-     * You can pass a custom request object below. This will override the initial configuration. For more information, visit:
-     * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/request-response-object.md#request
-     */
+    // Determine which identity provider to use based on the user's selection
+    switch (selectedProvider) {
+        case "1": // Microsoft
+            signInWithMicrosoft();
+            break;
+        case "2": // Google
+            signInWithGoogle();
+            break;
+        default:
+            alert("Invalid selection.");
+            break;
+    }
+}
 
+function signInWithMicrosoft() {
+    // Perform sign-in with Microsoft identity provider
     myMSALObj.loginPopup(loginRequest)
         .then(handleResponse)
         .catch(error => {
-            console.error(error);
+            console.error("Microsoft sign-in error:", error);
         });
+}
+
+function signInWithGoogle() {
+    // Perform sign-in with Google identity provider
+    // Implement the sign-in logic for Google here
 }
 
 function signOut() {

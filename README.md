@@ -61,7 +61,7 @@ When running in this mode, attempting to access the API without proper authentic
 
 ## Multiple authentication schemes
 1. In the **appsettings.json** set **AzureAd:Enable** and **Google:Enable** to **true** and fill in **Google:ClientId**.
-2. Execute ***npm start** in **react-spa** folder to launch frontend client on http://localhost:3000.
+2. Execute **npm start** in **react-spa** folder to launch frontend client on http://localhost:3000.
 3. Click **Login** and choose one of the supported options:
 	* Sign in with Google Access Token
 	* Google one tap
@@ -72,10 +72,12 @@ When running in this mode, attempting to access the API without proper authentic
 4. Click **Get Weather** button. It will send the request to server with corresponding bearer token.
 
 ![Alt text](docs/callAPI.png?raw=true "Call API")
+
 5. Click **Profile** to see your profile's information retrieved from the corresponding identity provider.
 
 ![Alt text](docs/profile.png?raw=true "Profile")
 
 ## References
 [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
+
 [Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)
