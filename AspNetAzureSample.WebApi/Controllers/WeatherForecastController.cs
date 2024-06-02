@@ -1,11 +1,9 @@
 using AspNetAzureSample.Models;
 using AspNetAzureSample.UserProviders;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace AspNetAzureSample.Controllers
 {
-    [Authorize(AuthenticationSchemes = "Bearer,Google")]
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase

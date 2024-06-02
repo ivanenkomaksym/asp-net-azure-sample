@@ -43,10 +43,19 @@ var loggerFactory = LoggerFactory.Create(builder =>
     builder.SetMinimumLevel(LogLevel.Information);
 });
 
-services.AddDbContext<ApplicationContext>(opts =>
-    opts.UseMySQL(configuration.GetConnectionString("sqlConnection")));
+// #TODO: Add option to start from db or use in-memory
+if (true)
+{
+    services.AddDbContext<ApplicationContext>(opts =>
+        opts.UseInMemoryDatabase("AppDb"));
+}
+else
+{
+    services.AddDbContext<ApplicationContext>(opts =>
+        opts.UseMySQL(configuration.GetConnectionString("sqlConnection")));
+}
 
-services.AddIdentity<User, IdentityRole>(opt =>
+services.AddIdentityApiEndpoints<IdentityUser>(opt =>
 {
     opt.Password.RequiredLength = 7;
     opt.Password.RequireDigit = false;
@@ -68,6 +77,7 @@ if (azureadOptions.Enable && googleOptions.Enable)
             options.DefaultScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
             options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
         })
+        .AddCookie()
         .AddJwtBearer(options =>
         {
             configuration.GetSection(AzureADOptions.Name).Bind(options);
@@ -102,12 +112,14 @@ if (azureadOptions.Enable && googleOptions.Enable)
     // Authorization
     services.AddAuthorization(options =>
     {
-        var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
-            JwtBearerDefaults.AuthenticationScheme,
-            "Google");
-        defaultAuthorizationPolicyBuilder =
-            defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-        options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
+        // #TODO: Doesn't seem to be really needed
+        //var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
+        //    JwtBearerDefaults.AuthenticationScheme,
+        //    "Google",
+        //    "Identity.BearerAndApplication");
+        //defaultAuthorizationPolicyBuilder =
+        //    defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
+        //options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
     });
 }
 else if (azureadOptions.Enable)
@@ -231,6 +243,8 @@ app.UseCors(builder =>
     builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
 });
 
+app.MapIdentityApi<IdentityUser>();
+
 app.UseAuthentication();
 // UseAuthorization must be placed after UseAuthentication, see https://stackoverflow.com/questions/65350040/signalr-issue-with-net-core-5-0-migration-app-usesignalr-app-useendpoints
 app.UseAuthorization();
@@ -252,4 +266,8 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 
-app.MigrateDatabase().Run();
+// #TODO: Add option to start from db or use in-memory
+if (false)
+    app.MigrateDatabase();
+
+app.Run();
