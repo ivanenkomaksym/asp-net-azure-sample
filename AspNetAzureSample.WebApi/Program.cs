@@ -36,6 +36,9 @@ configuration.Bind(GoogleOptions.Name, googleOptions);
 var swaggerOptions = new SwaggerOptions();
 configuration.Bind(SwaggerOptions.Name, swaggerOptions);
 
+var storageOptions = new StorageOptions();
+configuration.Bind(StorageOptions.Name, storageOptions);
+
 var loggerFactory = LoggerFactory.Create(builder =>
 {
     builder.AddDebug();
@@ -43,8 +46,7 @@ var loggerFactory = LoggerFactory.Create(builder =>
     builder.SetMinimumLevel(LogLevel.Information);
 });
 
-// #TODO: Add option to start from db or use in-memory
-if (true)
+if (storageOptions.StorageType == StorageOptions.StorageTypes.InMemory)
 {
     services.AddDbContext<ApplicationContext>(opts =>
         opts.UseInMemoryDatabase("AppDb"));
@@ -52,7 +54,7 @@ if (true)
 else
 {
     services.AddDbContext<ApplicationContext>(opts =>
-        opts.UseMySQL(configuration.GetConnectionString("sqlConnection")));
+        opts.UseMySQL(storageOptions.SqlConnection));
 }
 
 services.AddIdentityApiEndpoints<IdentityUser>(opt =>
@@ -266,8 +268,7 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 
-// #TODO: Add option to start from db or use in-memory
-if (false)
+if (storageOptions.StorageType == StorageOptions.StorageTypes.Persistent)
     app.MigrateDatabase();
 
 app.Run();
