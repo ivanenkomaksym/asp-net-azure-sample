@@ -64,8 +64,14 @@ services.AddIdentityApiEndpoints<IdentityUser>(opt =>
     opt.Password.RequireUppercase = false;
 
     opt.User.RequireUniqueEmail = true;
+    opt.SignIn.RequireConfirmedAccount = false;
 })
- .AddEntityFrameworkStores<ApplicationContext>();
+    .AddRoles<IdentityRole>()   // AddIdentityApiEndpoints doesn't configure roles by default unline AddIdentity, so add it manually
+    .AddEntityFrameworkStores<ApplicationContext>()
+    .AddDefaultTokenProviders();
+
+services.AddTransient<IdentityDataSeeder>();
+services.AddHostedService<SetupIdentityDataSeeder>();
 
 services.AddAutoMapper(typeof(Program));
 
