@@ -5,7 +5,7 @@ This sample demonstrates how to configure ASP.NET application for:
 - Multitenant authentication (based on [Change your ASP.NET Core Web app to sign-in users in any org with the Microsoft identity platform](https://github.com/Azure-Samples/active-directory-aspnetcore-webapp-openidconnect-v2/blob/master/1-WebApp-OIDC/1-2-AnyOrg/README-1-1-to-1-2.md))
 - Swagger client application access using signed-in user
 - Application only permissions (based on [Get access without a user](https://learn.microsoft.com/en-us/graph/auth-v2-service) and [A .NET Core daemon console application calling a protected Web API with its own identity](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2/tree/master/2-Call-OwnApi))
-- Use multiple authentication schemes: AzureAD and Google
+- Use multiple authentication schemes: AzureAD, Google and Cookie-based
 
 ## Dependencies
 [.NET8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
@@ -77,7 +77,36 @@ When running in this mode, attempting to access the API without proper authentic
 
 ![Alt text](docs/profile.png?raw=true "Profile")
 
+### Cookie-based authentication
+1. Open Swagger UI via http://localhost:5000/swagger/index.html
+2. Click **Authorize** button and authenticate with your Microsoft credentials
+3. Confirm you can execute http://localhost:5000/WeatherForecast. In this case **Bearer** authentication scheme is challenged.
+```
+dbug: Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerHandler[8]
+      AuthenticationScheme: Bearer was successfully authenticated.
+info: AspNetAzureSample.UserProviders.DefaultUserProvider[0]
+      DefaultUserProvider: received '' user name.
+```
+4. Click **Authorize** button again and click **Logout**
+5. Confirm you cannot anymore execute http://localhost:5000/WeatherForecast and get `401 Error: Unauthorized`
+6. Execute `/register` with body:
+```json
+{
+  "email": "alice@gmail.com",
+  "password": "string1!"
+}
+```
+7. Execute `/login` with the same body. Set `useCookies` to `true`. New cookie will appear in the browser, a sample cookie record is shown:
+![Alt text](docs/cookie.png?raw=true "Cookie")
+9. Confirm you can again execute http://localhost:5000/WeatherForecast. In this case **Identity.BearerAndApplication** authentication scheme is challenged.
+```
+dbug: Microsoft.Extensions.DependencyInjection.IdentityServiceCollectionExtensions+CompositeIdentityHandler[8]
+      AuthenticationScheme: Identity.BearerAndApplication was successfully authenticated.
+info: AspNetAzureSample.UserProviders.DefaultUserProvider[0]
+      DefaultUserProvider: received 'alice@gmail.com' user name.
+```
+If you remove the cookie, authentication will again fail.
 ## References
-[Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
-
-[Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)
+* [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
+* [Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)
+* [How to use Identity to secure a Web API backend for SPAs](https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/security/authentication/identity-api-authorization.md)
