@@ -223,6 +223,20 @@ builder.Services.AddSwaggerGen(c =>
     }
 });
 
+// Read CORS configuration from appsettings.json
+var corsOrigin = configuration["UseCors:AllowOrigin"];
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowSpecificOrigin",
+        builder =>
+        {
+            builder.WithOrigins(corsOrigin)
+                   .AllowAnyHeader()
+                   .AllowAnyMethod()
+                   .AllowCredentials();
+        });
+});
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -240,10 +254,7 @@ if (app.Environment.IsEnvironment(EnvironmentConfiguration.Testing))
 
 app.UseRouting();
 // UseCors must be placed after UseRouting and before UseAuthorization, see https://learn.microsoft.com/en-us/aspnet/core/security/cors?view=aspnetcore-7.0
-app.UseCors(builder =>
-{
-    builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
-});
+app.UseCors("AllowSpecificOrigin");
 
 app.MapIdentityApi<IdentityUser>();
 
