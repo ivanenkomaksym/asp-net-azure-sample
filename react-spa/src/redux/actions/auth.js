@@ -1,6 +1,7 @@
 import {AUTH, GOOGLE_IP, MICROSOFT_IP} from "../const/actionsTypes"
 
 import { callMsGraph } from '../../graph';
+import * as api from "../../api/index"
 
 import axios from 'axios';
 import User from "../../models/user"
@@ -15,10 +16,14 @@ export const loadUser = () => async (dispath)=>{
     }
 }
 
-export const signin = (data, navigate) => async (dispath) =>{
+export const signin = (input, navigate) => async (dispath) =>{
     console.log("auth.signin");
 
     try{
+        console.log("input:", JSON.stringify(input, null, 2));
+        const {data} = await api.signIn(input)
+
+        dispath({type: AUTH, data})
         navigate("/")
     }catch(err){
         console.log(err);
@@ -96,7 +101,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             console.log("lastName: ", lastName);
             console.log("email: ", email);
 
-            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, null);
+            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, response.accessToken);
 
             dispatch({type : AUTH, data: user})
             navigate("/")

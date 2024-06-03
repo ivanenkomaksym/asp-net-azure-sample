@@ -87,6 +87,14 @@ function Home() {
                 console.error(error);
                 setError(error.message);
             });
+        } else {
+            api.weatherForecastWithCookies().then((result) => {
+                console.log("data: ", JSON.stringify(result, null, 2));
+                setWeatherData(result);
+            }).catch(error => {
+                console.error(error);
+                setError(error.message);
+            });
         }
     }
 
