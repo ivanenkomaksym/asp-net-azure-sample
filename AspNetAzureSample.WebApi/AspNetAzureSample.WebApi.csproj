@@ -32,21 +32,4 @@
     <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" Version="6.5.0" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Migrations\" />
-    <Folder Include="NewFolder\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <UpToDateCheckInput Remove="Pages\Shared\_LoginPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <_ContentIncludedByDefault Remove="Pages\Shared\_LoginPartial.cshtml" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include="Pages\_LoginPartial.cshtml" />
-  </ItemGroup>
-
 </Project>
