@@ -115,6 +115,11 @@ export const signup = (formData, navigate) => async (dispatch)=>{
     console.log("auth.signup");
 
     try{
+        // signup user
+        const {data} = await api.signUp(formData)
+        console.log("input:", JSON.stringify(data, null, 2));
+
+        dispatch({type : AUTH, data})
         navigate("/")
     }catch(err){
         console.log(err);
