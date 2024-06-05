@@ -106,6 +106,29 @@ info: AspNetAzureSample.UserProviders.DefaultUserProvider[0]
       DefaultUserProvider: received 'alice@gmail.com' user name.
 ```
 If you remove the cookie, authentication will again fail.
+
+### Storage support
+
+You can switch between storage types by **Storage:StorageType** property in the **appsettings.json**:
+* InMemory
+* MySql
+* SqlServer
+
+If you want to switch between different database:
+
+```sh
+dotnet ef migrations remove
+dotnet ef migrations add InitialCreate
+dotnet ef database update
+```
+
+3 dummy users are seeded to easily test solution:
+```
+admin@example.com   P@ssword1
+alice@example.com   P@ssword1
+bob@example.com     P@ssword1
+```
+
 ## References
 * [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
 * [Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)

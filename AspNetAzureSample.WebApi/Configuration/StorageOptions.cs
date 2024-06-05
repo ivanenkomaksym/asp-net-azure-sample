@@ -14,7 +14,12 @@
             /// <summary>
             /// Will configure the context used to connect to a MySQL database.
             /// </summary>
-            Persistent = 1
+            MySql = 1,
+
+            /// <summary>
+            /// Will configure the context used to connect to a SQL Server database.
+            /// </summary>
+            SqlServer = 2
         }
 
         /// <summary>
@@ -23,8 +28,13 @@
         public StorageTypes? StorageType { get; set; }
 
         /// <summary>
-        /// Should be present if <see cref="StorageType"/> == <see cref="StorageTypes.Persistent"/>
+        /// Should be present if <see cref="StorageType"/> == <see cref="StorageTypes.MySql"/>
         /// </summary>
-        public string? SqlConnection { get; set; }
+        public string? MySqlConnection { get; set; }
+
+        /// <summary>
+        /// Should be present if <see cref="StorageType"/> == <see cref="StorageTypes.SqlServer"/>
+        /// </summary>
+        public string? SqlServerConnection { get; set; }
     }
 }

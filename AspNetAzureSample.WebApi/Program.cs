@@ -51,10 +51,15 @@ if (storageOptions.StorageType == StorageOptions.StorageTypes.InMemory)
     services.AddDbContext<ApplicationContext>(opts =>
         opts.UseInMemoryDatabase("AppDb"));
 }
-else
+else if (storageOptions.StorageType == StorageOptions.StorageTypes.MySql)
 {
     services.AddDbContext<ApplicationContext>(opts =>
-        opts.UseMySQL(storageOptions.SqlConnection));
+        opts.UseMySQL(storageOptions.MySqlConnection));
+}
+else if (storageOptions.StorageType == StorageOptions.StorageTypes.SqlServer)
+{
+    services.AddDbContext<ApplicationContext>(opts =>
+        opts.UseSqlServer(storageOptions.SqlServerConnection));
 }
 
 services.AddIdentityApiEndpoints<IdentityUser>(opt =>
@@ -285,7 +290,9 @@ app.UseSwaggerUI(c =>
 
 app.MapControllers();
 
-if (storageOptions.StorageType == StorageOptions.StorageTypes.Persistent)
+if (storageOptions.StorageType != StorageOptions.StorageTypes.InMemory)
     app.MigrateDatabase();
 
 app.Run();
+
+public partial class Program { }
