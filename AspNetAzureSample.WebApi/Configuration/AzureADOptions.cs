@@ -12,5 +12,6 @@
         public string? TenantId { get; set; }
         public IEnumerable<string>? AcceptedTenantIds { get; set; } 
         public string? RoleName { get; set; }
+        public ClientOptions? Client { get; set; }
     }
 }
