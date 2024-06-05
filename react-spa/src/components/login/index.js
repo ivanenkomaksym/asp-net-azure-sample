@@ -40,11 +40,18 @@ function Login() {
             });
     }
 
+    const [validationErrors, setValidationErrors] = useState(""); // State to store validation errors
+    const errorHandler = (err) => {        
+        if (err.response && err.response.status === 401) {
+            setValidationErrors("User name or password is incorrect.");
+        }
+    };
+
     // Function to handle form submission
     function handleSubmit(e) {
         e.preventDefault();
         if (email !== "" && password !== "") {
-            dispatch(signin({ email, password }, navigate));
+            dispatch(signin({ email, password }, navigate, errorHandler));
         }
     }
 
@@ -73,6 +80,11 @@ function Login() {
                 </div>
 
                 <button onClick={handleSubmit} className={LoginStyles.loginBTN}>LOGIN</button>
+
+                {validationErrors != null && (
+                        <span className={LoginStyles.errorMsg}>{validationErrors}</span>
+                    )}
+
                 <span className={LoginStyles.or}>or</span>
                 <button onClick={() => googleLogin()} className={LoginStyles.googleBTN}>
                     <i class="fa-brands fa-google"></i>  Sign in with Google Access Token

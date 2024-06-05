@@ -35,6 +35,22 @@
     border: 0px none;
 }
 
+.inputContainerInvalid input{
+    width: 100%;
+    background-color: red;
+    color:black;
+    padding: 15px;
+    border-radius: .5rem;
+    display: block;
+    margin-bottom: 3px;
+    border: 2px red;
+}
+
+.errorMsg {
+    color: red;
+    font-size: 14px;
+}
+
 .loginBTN{
     border: none;
     width: 100%;

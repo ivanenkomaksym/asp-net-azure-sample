@@ -16,7 +16,7 @@ export const loadUser = () => async (dispath)=>{
     }
 }
 
-export const signin = (input, navigate) => async (dispath) =>{
+export const signin = (input, navigate, errorHandler) => async (dispath) =>{
     console.log("auth.signin");
 
     try{
@@ -26,7 +26,7 @@ export const signin = (input, navigate) => async (dispath) =>{
         dispath({type: AUTH, data})
         navigate("/")
     }catch(err){
-        console.log(err);
+        errorHandler(err);
     }
 }
 
@@ -111,7 +111,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
     }
 }
 
-export const signup = (formData, navigate) => async (dispatch)=>{
+export const signup = (formData, navigate, errorHandler) => async (dispatch)=>{
     console.log("auth.signup");
 
     try{
@@ -122,7 +122,7 @@ export const signup = (formData, navigate) => async (dispatch)=>{
         dispatch({type : AUTH, data})
         navigate("/")
     }catch(err){
-        console.log(err);
+        errorHandler(err);
     }
 }
 
