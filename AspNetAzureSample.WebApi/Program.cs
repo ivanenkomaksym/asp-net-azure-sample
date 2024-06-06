@@ -91,25 +91,6 @@ if (azureadOptions.Enable && googleOptions.Enable)
             options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
         })
         .AddCookie()
-        .AddJwtBearer(options =>
-        {
-            configuration.GetSection(AzureADOptions.Name).Bind(options);
-            options.TokenValidationParameters.IssuerValidator = (string issuer,
-                                                                    SecurityToken securityToken,
-                                                                    TokenValidationParameters validationParameters) =>
-            {
-                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
-            };
-            options.TokenValidationParameters.ValidateIssuerSigningKey = false;
-            options.TokenValidationParameters.SignatureValidator = delegate (string token, TokenValidationParameters parameters)
-            {
-                var jwt = new Microsoft.IdentityModel.JsonWebTokens.JsonWebToken(token);
-
-                return jwt;
-            };
-
-            options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-        })
         .AddJwtBearer("Google", options =>
         {
             options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
@@ -120,6 +101,21 @@ if (azureadOptions.Enable && googleOptions.Enable)
                          options =>
         {
             options.SelectDefaultSchemeForCurrentRequest();
+        })
+        .AddMicrosoftIdentityWebApi(jwtOptions =>
+        {
+            configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
+            jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
+                                                                    SecurityToken securityToken,
+                                                                    TokenValidationParameters validationParameters) =>
+            {
+                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
+            };
+            jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
+        },
+        msIdentityOptions =>
+        {
+            configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
         });
 
     // Authorization
