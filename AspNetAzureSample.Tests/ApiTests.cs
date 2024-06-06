@@ -53,6 +53,21 @@ namespace AspNetAzureSample.Tests
         }
 
         [Fact]
+        public async Task GetWeatherForecastWithGoogleIdToken()
+        {
+            // Arrange
+            var tokenResponse = await TokenExtensions.GetGoogleTokenAsync();
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenResponse.id_token);
+
+            // Act
+            var response = await HttpClient.GetAsync(WeatherForecastURI);
+            var responseCode = response.StatusCode;
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.OK, responseCode);
+        }
+
+        [Fact]
         public async Task GetWeatherForecastWithCookieAuthn()
         {
             // Arrange
