@@ -1,6 +1,10 @@
-﻿using System.Text.Json;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using System.Text.Json;
 using AspNetAzureSample.Configuration;
 using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 
 namespace AspNetAzureSample.Tests.Tokens
 {
@@ -8,15 +12,7 @@ namespace AspNetAzureSample.Tests.Tokens
     {
         public static async Task<TokenResponse> GetTokenAsync()
         {
-            var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, "appsettings.json");
-
-            var builder = new ConfigurationBuilder().AddJsonFile(configPath);
-
-            var configuration = builder.Build();
-
-            var azureadOptions = new AzureADOptions();
-            configuration.Bind(AzureADOptions.Name, azureadOptions);
+            var azureadOptions = GetAzureADOptions();
 
             if (azureadOptions.Client == null)
                 throw new ArgumentException($"{ClientOptions.Name} must be filled in.");
@@ -55,6 +51,52 @@ namespace AspNetAzureSample.Tests.Tokens
                 throw new Exception();
 
             return tokenResponse;
+        }
+
+        public static string GenerateJwtTokenWithoutSignature()
+        {
+            var azureadOptions = GetAzureADOptions();
+            var userId = "admin@example.com";
+            var issuer = $"https://login.microsoftonline.com/{azureadOptions.TenantId}";
+            var audience = azureadOptions.Audience;
+            var secretKey = "chR8D4FlG6E3mwquM3VtnsugS6zqsrBQ";
+
+            var claims = new[]
+            {
+                new Claim(JwtRegisteredClaimNames.Sub, userId),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(JwtRegisteredClaimNames.Iss, issuer),
+                new Claim(JwtRegisteredClaimNames.Aud, audience),
+                new Claim(ClaimTypes.NameIdentifier, userId)
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var token = new JwtSecurityToken(
+                issuer: issuer,
+                audience: audience,
+                claims: claims,
+                expires: DateTime.Now.AddMinutes(30), // Token expiration time
+                signingCredentials: creds
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        private static AzureADOptions GetAzureADOptions()
+        {
+            var projectDir = Directory.GetCurrentDirectory();
+            var configPath = Path.Combine(projectDir, "appsettings.json");
+
+            var builder = new ConfigurationBuilder().AddJsonFile(configPath);
+
+            var configuration = builder.Build();
+
+            var azureadOptions = new AzureADOptions();
+            configuration.Bind(AzureADOptions.Name, azureadOptions);
+
+            return azureadOptions;
         }
     }
 }

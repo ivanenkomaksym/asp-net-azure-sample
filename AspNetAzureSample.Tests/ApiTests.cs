@@ -1,6 +1,7 @@
 ﻿using System.Net.Http.Headers;
 using System.Text;
 using AspNetAzureSample.Tests.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace AspNetAzureSample.Tests
@@ -22,12 +23,33 @@ namespace AspNetAzureSample.Tests
         [Fact]
         public async Task GetWeatherForecastWithAccessToken()
         {
+            // Arrange
             var tokenResponse = await TokenExtensions.GetTokenAsync();
-            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", tokenResponse.access_token);
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, tokenResponse.access_token);
 
+            // Act
             var response = await HttpClient.GetAsync(WeatherForecastURI);
-            var responseCode = response.StatusCode.ToString();
-            Assert.Equal("OK", responseCode);
+            var responseCode = response.StatusCode;
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.OK, responseCode);
+        }
+
+        [Fact]
+        public async Task GetWeatherForecastWithInvalidAccessTokenShouldFail()
+        {
+            // Arrange
+            var accessToken = TokenExtensions.GenerateJwtTokenWithoutSignature();
+            HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(JwtBearerDefaults.AuthenticationScheme, accessToken);
+
+            // Act
+            var response = await HttpClient.GetAsync(WeatherForecastURI);
+            var responseCode = response.StatusCode;
+
+            // Assert
+            Assert.Equal(System.Net.HttpStatusCode.Unauthorized, responseCode);
+            Assert.True(response.Headers.Contains("WWW-Authenticate"));
+            Assert.Contains("The signature key was not found", response.Headers.GetValues("WWW-Authenticate").FirstOrDefault());
         }
 
         [Fact]
