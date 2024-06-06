@@ -1,4 +1,5 @@
 ﻿using System.Net.Http.Headers;
+using System.Text;
 using AspNetAzureSample.Tests.Tokens;
 using Microsoft.AspNetCore.Mvc.Testing;
 
@@ -6,11 +7,16 @@ namespace AspNetAzureSample.Tests
 {
     public class ApiTests : IClassFixture<WebApplicationFactory<Program>>
     {
-        public HttpClient HttpClient;
+        private readonly HttpClient HttpClient;
+        private readonly string LoginURI = "http://localhost/login?useCookies=true";
+        private readonly string WeatherForecastURI = "http://localhost/WeatherForecast";
 
         public ApiTests(WebApplicationFactory<Program> factory)
         {
-            HttpClient = factory.CreateClient();
+            HttpClient = factory.CreateClient(new WebApplicationFactoryClientOptions
+            {
+                HandleCookies = true
+            });
         }
 
         [Fact]
@@ -19,9 +25,35 @@ namespace AspNetAzureSample.Tests
             var tokenResponse = await TokenExtensions.GetTokenAsync();
             HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("bearer", tokenResponse.access_token);
 
-            var response = await HttpClient.GetAsync("/WeatherForecast");
+            var response = await HttpClient.GetAsync(WeatherForecastURI);
             var responseCode = response.StatusCode.ToString();
             Assert.Equal("OK", responseCode);
+        }
+
+        [Fact]
+        public async Task GetWeatherForecastWithCookieAuthn()
+        {
+            // Arrange
+            var email = "admin@example.com";
+            var password = "P@ssword1";
+
+            var payload = new
+            {
+                email,
+                password
+            };
+
+            var jsonPayload = Newtonsoft.Json.JsonConvert.SerializeObject(payload);
+            var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
+
+            // Act
+            var loginResponse = await HttpClient.PostAsync(LoginURI, content);
+            loginResponse.EnsureSuccessStatusCode();
+
+            Assert.True(loginResponse.Headers.Contains("Set-Cookie"));
+
+            var weatherForecastResponse = await HttpClient.GetAsync(WeatherForecastURI);
+            weatherForecastResponse.EnsureSuccessStatusCode();
         }
     }
 }
