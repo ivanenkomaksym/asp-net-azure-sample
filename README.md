@@ -6,6 +6,7 @@ This sample demonstrates how to configure ASP.NET application for:
 - Swagger client application access using signed-in user
 - Application only permissions (based on [Get access without a user](https://learn.microsoft.com/en-us/graph/auth-v2-service) and [A .NET Core daemon console application calling a protected Web API with its own identity](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2/tree/master/2-Call-OwnApi))
 - Use multiple authentication schemes: AzureAD, Google and Cookie-based
+- Get Microsoft/Google access tokens programatically for automated testing
 
 ## Dependencies
 [.NET8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
@@ -46,6 +47,26 @@ This sample demonstrates how to configure ASP.NET application for:
    - client_secret={daemon app client secret from step 4}
    - grant_type=client_credentials
 13. Using generated token access https://localhost:44321/Maintenance
+
+## Authentication with Google
+1. Sign in to the [Google Console](https://console.cloud.google.com)
+2. In **APIs & Services**/**Credentials** create new credentials
+3. Configure necessary Javascript origins and redirect URIs, including https://developers.google.com/oauthplayground
+4. Go to [OAuth2 Playground](https://developers.google.com/oauthplayground)
+5. Press top right settings (gear) icon (OAuth 2.0 configuration)
+6. Tick **Use your own OAuth credentials** and enter OAuth Client ID and OAuth Client secret
+7. At the bottom enter scopes:
+```
+openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
+```
+8. Press Authorize APIs.
+9. On the next screen choose the account (optional screen) and give the permissions to the app.
+10. Press **Exchange authorization code for tokens**
+11. Get your non-expiring **refresh_token** and put it into **appsettings.json**
+12. To get an **id_token** using **refresh_token**:
+```
+curl -d "client_id=YOUR_APP_CLIENT_ID&client_secret=YOUR_APP_CLIENT_SECRET&grant_type=refresh_token&refresh_token=YOUR_APP_REFRESH_TOKEN" "https://oauth2.googleapis.com/token"
+```
 
 ## Authentication for Testing
 
@@ -132,4 +153,6 @@ bob@example.com     P@ssword1
 ## References
 * [Authentication and ASP.NET Core Integration Testing using TestServer](https://medium.com/@zbartl/authentication-and-asp-net-core-integration-testing-using-testserver-15d47b03045a)
 * [Use multiple authentication schemes](https://learn.microsoft.com/en-us/aspnet/core/security/authorization/limitingidentitybyscheme?view=aspnetcore-8.0#use-multiple-authentication-schemes)
+* [How to Use Multiple Authentication Schemes in .NET](https://code-maze.com/dotnet-multiple-authentication-schemes/)
 * [How to use Identity to secure a Web API backend for SPAs](https://github.com/dotnet/AspNetCore.Docs/blob/main/aspnetcore/security/authentication/identity-api-authorization.md)
+* [How to get Google access token programmatically (automated testing)](https://stackoverflow.com/questions/17657879/does-google-provide-test-users-for-integration-testing?newreg=7e561b60378a409f92ee3191cc92cdac)
