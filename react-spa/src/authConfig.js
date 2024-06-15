@@ -81,4 +81,7 @@ export const weatherForecastTokenRequest = {
     prompt: "consent"
 };
 
+export const loginUrl = "http://localhost:5000/login";
+export const registerUrl = "http://localhost:5000/register";
+export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
 export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
