@@ -35,7 +35,6 @@ export async function weatherForecast(accessToken) {
             'Authorization': `Bearer ${accessToken}`,
             'Access-Control-Allow-Origin': '*',
             'Content-Type': 'application/json',
-            withCredentials: true,
             mode: 'no-cors'
         }
     });
