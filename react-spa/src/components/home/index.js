@@ -6,7 +6,7 @@ import { Link  } from 'react-router-dom';
 
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { weatherForecastTokenRequest, msalConfig } from '../../authConfig';
-import { MICROSOFT_IP, GOOGLE_IP } from '../../redux/const/actionsTypes';
+import { MICROSOFT_IP, GOOGLE_IP, ORGANIZATION } from '../../redux/const/actionsTypes';
 
 function Home() {
     const [userData, setUserData] = useState(null);
@@ -79,7 +79,8 @@ function Home() {
                     console.error(error);
                     setError(error.message);
                 });
-        } else if (userData.identityProvider == GOOGLE_IP) {
+        } else if (userData.identityProvider == GOOGLE_IP ||
+                   userData.identityProvider == ORGANIZATION) {
             api.weatherForecast(userData.token).then((result) => {
                 console.log("data: ", JSON.stringify(result, null, 2));
                 setWeatherData(result);
