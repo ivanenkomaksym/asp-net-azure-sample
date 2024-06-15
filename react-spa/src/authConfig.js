@@ -80,3 +80,5 @@ export const weatherForecastTokenRequest = {
     forceRefresh: false, // Set this to "true" to skip a cached token and go to the server to get a new token
     prompt: "consent"
 };
+
+export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";

@@ -55,6 +55,10 @@ function Login() {
         }
     }
 
+    const handleLoginOrgClick = () => {
+        navigate('/account/loginorg');
+    };
+
     return (
         <div className={LoginStyles.loginContainer}>
             <div className={LoginStyles.loginContainerv2}>
@@ -104,8 +108,13 @@ function Login() {
                 <button onClick={microsoftLogin} className={LoginStyles.microsoftBTN}>
                     Sign in with Microsoft
                 </button>
-                <span className={LoginStyles.notreg}>Not registered yet? <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
+                <p />
 
+                <button className={LoginStyles.organizationBTN} onClick={handleLoginOrgClick}>
+                    Sign in with organization
+                </button>
+
+                <span className={LoginStyles.notreg}>Not registered yet? <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
             </div>
         </div>
     );

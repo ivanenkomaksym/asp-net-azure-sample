@@ -63,45 +63,6 @@
     margin-bottom: 40px;
 }
 
-.or{
-    display: block;
-    text-align: center;
-}
-
-.googleBTN{
-    padding: 15px;
-    width: 100%;
-    border: 0px none;
-    background-color: #797389;
-    border-radius: .5rem;
-    color:white;
-    transition: all 0.4s;
-}
-
-.googleBTN:hover{
-    transition: all 0.4s;
-    background-color: white;
-    border: 1px solid black;
-    color: black;
-
-}
-
-/* Styles for Microsoft button */
-.microsoftBTN {
-    padding: 15px;
-    width: 100%;
-    border: 0px none;
-    background-color: #0078d4; /* Microsoft Blue */
-    border-radius: .5rem;
-    color: white;
-    transition: all 0.4s;
-}
-
-.microsoftBTN:hover {
-    transition: all 0.4s;
-    background-color: #005a9e; /* Darker Microsoft Blue on hover */
-}
-
 /* Styles for Organization button */
 .organizationBTN {
     padding: 15px;
@@ -118,31 +79,13 @@
     background-color: #005812;
 }
 
-.singupBTN{
-    color:black;
-}
-
-.singupBTN:hover{
-    color:black;
-    text-decoration: underline;
-}
-
-.notreg{
-    display: inline-block;
-    margin-top: 15px;
-}
-
-.forgetmeContainer{
-    display: flex;
-    margin-top: 15px;
-    justify-content: space-between;
-}
-
-.forgetmeContainer a{
-    color: black;
-}
-
 .errorMsg {
     color: red;
     font-size: 14px;
+}
+
+.dropdownContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
