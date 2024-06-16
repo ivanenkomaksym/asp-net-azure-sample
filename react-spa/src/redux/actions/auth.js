@@ -6,6 +6,8 @@ import * as api from "../../api/index"
 import axios from 'axios';
 import User from "../../models/user"
 
+import { jwtDecode } from 'jwt-decode';
+
 export const loadUser = () => async (dispath)=>{
     console.log("auth.loadUser");
     
@@ -115,7 +117,16 @@ export const signinOrg = (id_token, navigate) => async (dispatch)=>{
     console.log("auth.signinOrg");
 
     try{
-        const user = new User("TODO", "TODO", "TODO", null, ORGANIZATION, id_token);
+        const decodedToken = jwtDecode(id_token);
+        console.log(decodedToken);
+      
+        // Example of extracting user info
+        const firstName = decodedToken.given_name;
+        const lastName = decodedToken.family_name;
+        const email = decodedToken.email || decodedToken.unique_name;
+        const profilePicture = decodedToken.picture;
+
+        const user = new User(firstName, lastName, email, profilePicture, ORGANIZATION, id_token);
 
         dispatch({type : AUTH, data: user})
         navigate("/")
