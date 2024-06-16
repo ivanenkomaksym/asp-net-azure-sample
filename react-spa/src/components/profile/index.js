@@ -31,6 +31,14 @@ function Profile() {
                 <td>Identity Provider:</td>
                 <td>{userInfo.identityProvider}</td>
               </tr>
+              <tr>
+                <td>Id token:</td>
+                <td>{userInfo.id_token}</td>
+              </tr>
+              <tr>
+                <td>Refresh token:</td>
+                <td>{userInfo.refresh_token}</td>
+              </tr>
             </tbody>
           </table>
         </div>

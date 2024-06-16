@@ -62,6 +62,7 @@ export const signinGoogleWithIdToken = (id_token, navigate) => async (dispatch)=
         axios
             .get(`https://www.googleapis.com/oauth2/v3/tokeninfo?id_token=${id_token}`)
             .then(async response => {
+                console.log("GoogleWithIdToken response: ", JSON.stringify(response, null, 2));
                 handleGoogleResponse(response, id_token, dispatch, navigate);
             })
             .catch(err => {
@@ -83,7 +84,7 @@ function handleGoogleResponse(response, id_token, dispatch, navigate) {
     console.log("email: ", email);
     console.log("picture: ", picture);
 
-    const user = new User(firstName, lastName, email, picture, GOOGLE_IP, id_token);
+    const user = new User(firstName, lastName, email, picture, GOOGLE_IP, id_token, null);
 
     dispatch({ type: AUTH, data: user });
     navigate("/");
@@ -103,7 +104,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             console.log("lastName: ", lastName);
             console.log("email: ", email);
 
-            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, response.accessToken);
+            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, response.accessToken, null);
 
             dispatch({type : AUTH, data: user})
             navigate("/")
@@ -113,7 +114,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
     }
 }
 
-export const signinOrg = (id_token, navigate) => async (dispatch)=>{
+export const signinOrg = (id_token, refresh_token, navigate) => async (dispatch)=>{
     console.log("auth.signinOrg");
 
     try{
@@ -126,7 +127,7 @@ export const signinOrg = (id_token, navigate) => async (dispatch)=>{
         const email = decodedToken.email || decodedToken.unique_name;
         const profilePicture = decodedToken.picture;
 
-        const user = new User(firstName, lastName, email, profilePicture, ORGANIZATION, id_token);
+        const user = new User(firstName, lastName, email, profilePicture, ORGANIZATION, id_token, refresh_token);
 
         dispatch({type : AUTH, data: user})
         navigate("/")

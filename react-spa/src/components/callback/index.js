@@ -12,12 +12,12 @@ function Callback() {
     const search = window.location.search;
     const query = new URLSearchParams(search);
     const idToken = query.get('id_token');
-    console.log("query" + query);
+    const refreshToken = query.get('refresh_token');
 
     if (idToken) {
       // Handle successful login response
-      console.log("Organization login successful:", idToken);
-      dispatch(signinOrg(idToken, navigate));
+      console.log(`Organization login successful. idToken: ${idToken}\nrefreshToken: ${refreshToken}`);
+      dispatch(signinOrg(idToken, refreshToken, navigate));
     } else {
       // Handle error or invalid token
       console.error('ID token not found in the callback URL');
