@@ -1,14 +1,16 @@
 import React, { useState, useEffect } from "react";
 import LoginStyles from "./Login.module.css"
-import { loginOrgAuthorizeUrl } from "../../authConfig";
+import { loginOrgAuthorizeUrl, domains } from "../../authConfig";
 
 function LoginOrg() {
     const [email, setEmail] = useState("");
+    const [selectedOption, setSelectedOption] = useState(domains[0]);
 
     const [clicked, setClicked] = useState(false);
     useEffect(() => {
         if (clicked) {
-          window.location.assign(`${loginOrgAuthorizeUrl}?email=${email}`);
+            console.log(`email=${email}&domain_hint=${selectedOption}`);
+            window.location.assign(`${loginOrgAuthorizeUrl}?email=${email}&domain_hint=${selectedOption}`);
         }
       });
 
@@ -22,12 +24,12 @@ function LoginOrg() {
                     <input onChange={e => setEmail(e.target.value)} placeholder="enter your email" type="email" />
                 </div>
 
-                <div className={LoginStyles.inputContainer}>
+                <div className="dropdownContainer">
                     <label>ORGANIZATION</label>
-                    <select>
-                        <option value="option1">Option 1</option>
-                        <option value="option2">Option 2</option>
-                        <option value="option3">Option 3</option>
+                    <select value={selectedOption} onChange={e => setSelectedOption(e.target.value)} className="selectDropdown">
+                    {domains.map(domain => (
+                        <option key={domain} value={domain}>{domain}</option>
+                    ))}
                     </select>
                 </div>
 

@@ -88,4 +88,16 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 10px;
+}
+
+.selectDropdown {
+    width: 100%;
+    background-color: #e8f0fe;
+    color: black;
+    padding: 15px;
+    border-radius: .5rem;
+    border: 0px none;
+    margin-bottom: 3px;
+    display: block;
 }

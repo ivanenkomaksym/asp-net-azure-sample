@@ -85,3 +85,8 @@ export const loginUrl = "http://localhost:5000/login";
 export const registerUrl = "http://localhost:5000/register";
 export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
 export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
+export const domains = [
+    "domain1.com",
+    "domain2.com",
+    "domain3.com"
+];
