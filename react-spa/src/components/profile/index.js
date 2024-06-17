@@ -13,8 +13,6 @@ function Profile() {
   }, []);
 
   const handleRefreshToken = async () => {
-    preventDefault(); // Prevent default behavior if using a link
-
     try {
       // Make HTTP request to refresh token
       const response = await fetch(`${refreshTokenUrl}?email=${userInfo.email}&refresh_token=${userInfo.refresh_token}`, {
