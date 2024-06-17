@@ -1,8 +1,47 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { refreshTokenUrl } from "../../authConfig";
 
 function Profile() {
+  const [userInfo, setUserInfo] = useState(null);
+  const dispatch = useDispatch();
+
   // Retrieve user information from local storage
-  const userInfo = JSON.parse(localStorage.getItem('user_info'));
+  useEffect(() => {
+    const userInfoFromLocalStorage = JSON.parse(localStorage.getItem('user_info'));
+    setUserInfo(userInfoFromLocalStorage);
+  }, []);
+
+  const handleRefreshToken = async () => {
+    preventDefault(); // Prevent default behavior if using a link
+
+    try {
+      // Make HTTP request to refresh token
+      const response = await fetch(`${refreshTokenUrl}?email=${userInfo.email}&refresh_token=${userInfo.refresh_token}`, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to refresh token');
+      }
+
+      const data = await response.json();
+      const { id_token } = data; // Assuming the response includes id_token
+
+      // Update userInfo with new id_token
+      const updatedUserInfo = { ...userInfo, id_token };
+      setUserInfo(updatedUserInfo);
+
+      // Dispatch an action to update Redux state
+      dispatch({ type: 'AUTH', data: updatedUserInfo });
+
+    } catch (error) {
+      console.error('Error refreshing token:', error);
+    }
+  };
 
   return (
     <div className="profile-container">
@@ -33,14 +72,23 @@ function Profile() {
               </tr>
               <tr>
                 <td>Id token:</td>
-                <td>{userInfo.id_token}</td>
+                <td className="token-cell">{userInfo.id_token}</td>
               </tr>
               <tr>
                 <td>Refresh token:</td>
-                <td>{userInfo.refresh_token}</td>
+                <td className="token-cell">{userInfo.refresh_token}</td>
               </tr>
             </tbody>
           </table>
+          <br/>
+          { userInfo.refresh_token ? 
+            (
+              <button onClick={handleRefreshToken} className="linkBTN">
+                Refresh token
+              </button>
+            )
+            : <p/>
+          }
         </div>
       ) : (
         <div>

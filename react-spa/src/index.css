@@ -90,7 +90,7 @@ code {
 
 .profile-container {
   padding: 20px;
-  max-width: 600px;
+  max-width: 80%;
   margin: auto;
   font-family: Arial, sans-serif;
 }
@@ -113,6 +113,13 @@ code {
 .profile-table td:first-child {
   font-weight: bold;
   background-color: #f2f2f2;
+}
+
+.profile-table .token-cell {
+  word-wrap: break-word;
+  white-space: pre-wrap;
+  max-width: 1000px; /* or a specific width */
+  overflow-wrap: break-word;
 }
 
 .profile-picture {

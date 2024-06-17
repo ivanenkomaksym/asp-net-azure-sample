@@ -81,7 +81,7 @@ function Home() {
                 });
         } else if (userData.identityProvider == GOOGLE_IP ||
                    userData.identityProvider == ORGANIZATION) {
-            api.weatherForecast(userData.token).then((result) => {
+            api.weatherForecast(userData.id_token).then((result) => {
                 console.log("data: ", JSON.stringify(result, null, 2));
                 setWeatherData(result);
             }).catch(error => {
@@ -113,6 +113,7 @@ function Home() {
         if (userInfo) {
             const { expirationDate } = userInfo;
             if (new Date(expirationDate) < new Date()) {
+                console.log("Clearing local storage due to token expiration");
                 localStorage.clear();
                 return false;
             }
