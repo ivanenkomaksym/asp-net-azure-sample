@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import LoginorgStyles from "./Loginorg.module.css"
-import { organizationsUrl, loginOrgAuthorizeUrl } from "../../authConfig";
+import { queryDomains } from "../../api";
+import { loginOrgAuthorizeUrl } from "../../authConfig";
 
 function LoginOrg() {
     const [domains, setDomains] = useState([]);
@@ -9,21 +10,16 @@ function LoginOrg() {
     const [selectedOption, setSelectedOption] = useState('');
 
     useEffect(() => {
-        // Function to fetch domains data
-        const fetchDomains = async () => {
+        const getDomains = async () => {
           try {
-            const response = await fetch(`${organizationsUrl}`);
-            if (!response.ok) {
-              throw new Error('Failed to fetch domains');
-            }
-            const data = await response.json();
+            const data = await queryDomains();
             setDomains(data);
           } catch (error) {
             console.error('Error fetching domains:', error);
           }
         };
     
-        fetchDomains();
+        getDomains();
       }, []); // Empty dependency array ensures useEffect runs only once on component mount
 
     const [clicked, setClicked] = useState(false);

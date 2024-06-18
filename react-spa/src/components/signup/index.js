@@ -6,13 +6,11 @@ import {useGoogleLogin} from '@react-oauth/google';
 import {useDispatch} from 'react-redux';
 import {signup, signupGoogle} from "../../redux/actions/auth";
 
-
 const InitState = {
     email: '',
     password: '',
     confirmPassword: ''
 }
-
 
 function Signup() {
     const nagivate = useNavigate();

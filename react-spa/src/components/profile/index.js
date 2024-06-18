@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { refreshTokenUrl } from "../../authConfig";
+import { refreshIdToken } from '../../api';
 import ProfileStyles from "./Profile.module.css"
 
 function Profile() {
@@ -14,32 +14,14 @@ function Profile() {
   }, []);
 
   const handleRefreshToken = async () => {
-    try {
-      // Make HTTP request to refresh token
-      const response = await fetch(`${refreshTokenUrl}?email=${userInfo.email}&refresh_token=${userInfo.refresh_token}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        }
-      });
+    const { id_token } = await refreshIdToken(userInfo.email, userInfo.refresh_token);
 
-      if (!response.ok) {
-        throw new Error('Failed to refresh token');
-      }
+    // Update userInfo with new id_token
+    const updatedUserInfo = { ...userInfo, id_token };
+    setUserInfo(updatedUserInfo);
 
-      const data = await response.json();
-      const { id_token } = data; // Assuming the response includes id_token
-
-      // Update userInfo with new id_token
-      const updatedUserInfo = { ...userInfo, id_token };
-      setUserInfo(updatedUserInfo);
-
-      // Dispatch an action to update Redux state
-      dispatch({ type: 'AUTH', data: updatedUserInfo });
-
-    } catch (error) {
-      console.error('Error refreshing token:', error);
-    }
+    // Dispatch an action to update Redux state
+    dispatch({ type: 'AUTH', data: updatedUserInfo });
   };
 
   return (
@@ -79,14 +61,14 @@ function Profile() {
               </tr>
             </tbody>
           </table>
-          <br/>
-          { userInfo.refresh_token ? 
+          <br />
+          {userInfo.refresh_token ?
             (
               <button onClick={handleRefreshToken} className={ProfileStyles.linkBTN}>
                 Refresh token
               </button>
             )
-            : <p/>
+            : <p />
           }
         </div>
       ) : (
