@@ -1,4 +1,49 @@
-.linkBTN{
-    color:rgba(255,255,255,.5);
+.linkBTN {
+    color: white;
     text-decoration: none;
-}
+    margin: 0 10px;
+    padding: 8px 15px;
+    background-color: #444;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+
+.profileContainer {
+    padding: 20px;
+    max-width: 80%;
+    margin: auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  .profileContainer h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .profileTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .profileTable td {
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  .profileTable td:first-child {
+    font-weight: bold;
+    background-color: #f2f2f2;
+  }
+  
+  .profileTable .tokenCell {
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    max-width: 1000px; /* or a specific width */
+    overflow-wrap: break-word;
+  }
+  
+  .profilePicture {
+    max-width: 100px;
+    height: auto;
+    border-radius: 50%;
+  }

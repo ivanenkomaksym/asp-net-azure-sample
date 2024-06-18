@@ -6,6 +6,7 @@ import {useDispatch} from "react-redux"
 import {LOGOUT} from "../../redux/const/actionsTypes"
 import { useLocation } from 'react-router-dom'
 import { useNavigate  } from 'react-router-dom';
+import NavStyles from "./Nav.module.css"
 
 function Nav(props) {
     const dispatch = useDispatch();
@@ -29,32 +30,32 @@ function Nav(props) {
     }
 
     return (
-        <nav className="mainNav">
-            <div className="navContainer">
-                <Link className="linkBTN" to="/">Home</Link>
+        <nav className={NavStyles.mainNav}>
+            <div className={NavStyles.navContainer}>
+                <Link className={NavStyles.linkBTN} to="/">Home</Link>
             </div>
             <div>
                 {userData ? (
-                    <div className="rightSideNav">
+                    <div className={NavStyles.rightSideNav}>
                         <i className="fa-solid fa-user"></i>
                         <div>
-                            <span className="accountText">Account</span>
-                            <div className="navContainer">
-                                <Link className="linkBTN" to="/account/profile">Profile</Link>
-                                <span className="orText">or</span>
-                                <Link onClick={handleLogOut} className="linkBTN" to="/">Logout</Link>
+                            <span className={NavStyles.accountText}>Account</span>
+                            <div className={NavStyles.navContainer}>
+                                <Link className={NavStyles.linkBTN} to="/account/profile">Profile</Link>
+                                <span className={NavStyles.orText}>or</span>
+                                <Link onClick={handleLogOut} className={NavStyles.linkBTN} to="/">Logout</Link>
                             </div>
                         </div>
                     </div>
                 ) : (
-                    <div className="rightSideNav">
+                    <div className={NavStyles.rightSideNav}>
                         <i className="fa-solid fa-user"></i>
                         <div>
-                            <span className="accountText">Account</span>
-                            <div className="navContainer">
-                                <Link className="linkBTN" to="/account/login">Login</Link>
-                                <span className="orText">or</span>
-                                <Link className="linkBTN" to="/account/signup">Signup</Link>
+                            <span className={NavStyles.accountText}>Account</span>
+                            <div className={NavStyles.navContainer}>
+                                <Link className={NavStyles.linkBTN} to="/account/login">Login</Link>
+                                <span className={NavStyles.orText}>or</span>
+                                <Link className={NavStyles.linkBTN} to="/account/signup">Signup</Link>
                             </div>
                         </div>
                     </div>

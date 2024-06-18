@@ -1,0 +1,75 @@
+.container {
+    padding: 20px;
+    max-width: 800px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  .getWeatherButton {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 20px;
+  }
+  
+  .getWeatherButton:hover {
+    background-color: #45a049;
+  }
+  
+  .weatherData {
+    margin-top: 20px;
+  }
+  
+  .weatherTitle {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .forecastTable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  .forecastTable th, .forecastTable td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: left;
+  }
+  
+  .forecastTable th {
+    background-color: #f2f2f2;
+    font-weight: bold;
+  }
+  
+  .errorContainer {
+    margin-top: 20px;
+    color: red;
+  }
+  
+  .welcomeMessage {
+    text-align: center;
+    font-size: 18px;
+    margin-top: 20px;
+    padding: 20px;
+    background-color: #333;
+    color: white;
+    border-radius: 5px;
+  }
+  
+  .welcomeMessage a {
+    color: #4CAF50;
+    text-decoration: none;
+    font-weight: bold;
+  }
+  
+  .welcomeMessage a:hover {
+    text-decoration: underline;
+  }
+  
+  .errorMessage {
+    color: red;
+    font-size: 16px;
+  }

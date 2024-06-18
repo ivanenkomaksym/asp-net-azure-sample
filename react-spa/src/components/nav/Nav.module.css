@@ -1,37 +1,54 @@
-.mainNav{
-    color:white;
-    background-color: black;
+.mainNav {
     display: flex;
     justify-content: space-between;
-    padding:50px 100px;
+    align-items: center;
+    background-color: #333;
+    padding: 10px 20px;
+    color: white;
+  }
+
+.navContainer {
+  display: flex;
+  align-items: center;
 }
 
-.rightSideNav{
+.rightSideNav {
     display: flex;
     align-items: center;
-}
+  }
 
 .rightSideNav i{
     font-size: 30px;
     margin-right: 10px;
 }
 
-.container2{
-    display: flex;
-}
-.linkBTN{
-    color:rgba(255,255,255,.5);
+.linkBTN {
+    color: white;
     text-decoration: none;
+    margin: 0 10px;
+    padding: 8px 15px;
+    background-color: #444;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+  }
+  
+  .linkBTN:hover {
+    background-color: #555;
+  }
+
+.accountText {
+  margin-left: 10px;
+  font-size: 14px;
+  font-weight: bold;
 }
 
-.linkBTN:hover{
-    color:rgba(255,255,255,.5);
-    text-decoration: underline;
+.orText {
+  margin: 0 10px;
+  font-size: 12px;
+  color: #ccc;
 }
 
-
-.or{
-    display: inline-block;
-    margin-left: 3px;
-    margin-right: 3px;
+.faUser {
+  font-size: 18px;
+  margin-right: 10px;
 }

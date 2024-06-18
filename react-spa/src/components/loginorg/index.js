@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import LoginStyles from "./Login.module.css"
+import LoginorgStyles from "./Loginorg.module.css"
 import { organizationsUrl, loginOrgAuthorizeUrl } from "../../authConfig";
 
 function LoginOrg() {
@@ -35,11 +35,11 @@ function LoginOrg() {
       });
 
     return (
-        <div className={LoginStyles.loginContainer}>
-            <div className={LoginStyles.loginContainerv2}>
+        <div className={LoginorgStyles.loginContainer}>
+            <div className={LoginorgStyles.loginContainerv2}>
                 <h1>Welcome back</h1>
 
-                <div className={LoginStyles.inputContainer}>
+                <div className={LoginorgStyles.inputContainer}>
                     <label>EMAIL</label>
                     <input onChange={e => setEmail(e.target.value)} placeholder="enter your email" type="email" />
                 </div>
@@ -55,7 +55,7 @@ function LoginOrg() {
                     </select>
                 </div>
 
-                <button onClick={() => setClicked(true)} className={LoginStyles.loginBTN}>LOGIN</button>
+                <button onClick={() => setClicked(true)} className={LoginorgStyles.loginBTN}>LOGIN</button>
             </div>
         </div>
     );

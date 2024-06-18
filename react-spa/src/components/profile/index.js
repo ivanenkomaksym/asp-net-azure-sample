@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { refreshTokenUrl } from "../../authConfig";
+import ProfileStyles from "./Profile.module.css"
 
 function Profile() {
   const [userInfo, setUserInfo] = useState(null);
@@ -42,11 +43,11 @@ function Profile() {
   };
 
   return (
-    <div className="profile-container">
+    <div className={ProfileStyles.profileContainer}>
       {userInfo ? (
         <div>
           <h2>User Profile</h2>
-          <table className="profile-table">
+          <table className={ProfileStyles.profileTable}>
             <tbody>
               <tr>
                 <td>First Name:</td>
@@ -62,7 +63,7 @@ function Profile() {
               </tr>
               <tr>
                 <td>Profile Picture:</td>
-                <td><img src={userInfo.picture} alt="User Profile" className="profile-picture" /></td>
+                <td><img src={userInfo.picture} alt="User Profile" className={ProfileStyles.profilePicture} /></td>
               </tr>
               <tr>
                 <td>Identity Provider:</td>
@@ -70,18 +71,18 @@ function Profile() {
               </tr>
               <tr>
                 <td>Id token:</td>
-                <td className="token-cell">{userInfo.id_token}</td>
+                <td className={ProfileStyles.tokenCell}>{userInfo.id_token}</td>
               </tr>
               <tr>
                 <td>Refresh token:</td>
-                <td className="token-cell">{userInfo.refresh_token}</td>
+                <td className={ProfileStyles.tokenCell}>{userInfo.refresh_token}</td>
               </tr>
             </tbody>
           </table>
           <br/>
           { userInfo.refresh_token ? 
             (
-              <button onClick={handleRefreshToken} className="linkBTN">
+              <button onClick={handleRefreshToken} className={ProfileStyles.linkBTN}>
                 Refresh token
               </button>
             )

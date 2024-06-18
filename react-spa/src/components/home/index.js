@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom'
 import * as api from "../../api/index"
 import { Link  } from 'react-router-dom';
+import HomeStyles from "./Home.module.css"
 
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { weatherForecastTokenRequest, msalConfig } from '../../authConfig';
@@ -123,18 +124,18 @@ function Home() {
     };
 
     return (
-        <div className="container">
+        <div className={HomeStyles.container}>
             {checkTokenValidity() ? (
                 <>
                     {userData && (
-                        <button onClick={handleGetWeather} className="getWeatherButton">
+                        <button onClick={handleGetWeather} className={HomeStyles.getWeatherButton}>
                             Get Weather
                         </button>
                     )}
                     {userData && weatherData && (
-                        <div className="weatherData">
-                            <h2 className="weatherTitle">Weather Forecast</h2>
-                            <table className="forecastTable">
+                        <div className={HomeStyles.weatherData}>
+                            <h2 className={HomeStyles.weatherTitle}>Weather Forecast</h2>
+                            <table className={HomeStyles.forecastTable}>
                                 <thead>
                                     <tr>
                                         <th>Date</th>
@@ -157,13 +158,13 @@ function Home() {
                         </div>
                     )}
                     {errorMessage && (
-                        <div className="errorContainer">
-                            <p className="errorMessage">{errorMessage}</p>
+                        <div className={HomeStyles.errorContainer}>
+                            <p className={HomeStyles.errorMessage}>{errorMessage}</p>
                         </div>
                     )}
                 </>
             ) : (
-                <div className="welcomeMessage">
+                <div className={HomeStyles.welcomeMessage}>
                     Welcome. <Link to="/account/login">Login</Link> to continue.
                 </div>
             )}

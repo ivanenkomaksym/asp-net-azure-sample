@@ -1,12 +1,3 @@
-/*
- Color codes
- bg: #081621
- bg-light: #f1f1f1
- in-bg: #e8f0fe
- go-bg; #797389
- white-light: rgba(255,255,255,.5)
-*/
-
 .loginContainer{
     display: flex;
     justify-content: center;
