@@ -30,9 +30,9 @@ export async function signUp(data) {
 }
 
 // Function to fetch domains data
-export async function queryDomains() {
+export async function queryDomains(email) {
     try {
-        const response = await fetch(`${organizationsUrl}`);
+        const response = await fetch(`${organizationsUrl}?email=${email}`);
         if (!response.ok) {
             throw new Error('Failed to fetch domains');
         }
