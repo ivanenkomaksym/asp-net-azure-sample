@@ -92,3 +92,45 @@
     margin-bottom: 3px;
     display: block;
 }
+
+/* Container for displaying the email and the change button */
+.emailDisplayContainer {
+    margin-bottom: 20px;
+}
+
+/* Container for email label and address */
+.emailLabelAndAddress {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling for the email address and change button row */
+.emailAndButtonContainer {
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+}
+
+/* Styling for the email address */
+.emailAddress {
+    font-size: 16px;
+    color: #333;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+/* Styling for the change button */
+.changeEmailBTN {
+    padding: 5px 10px;
+    font-size: 14px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.changeEmailBTN:hover {
+    background-color: #0056b3;
+}
