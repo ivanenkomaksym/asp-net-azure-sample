@@ -70,9 +70,9 @@ export async function weatherForecastWithCookies() {
     return response.data;
 }
 
-export async function refreshIdToken(email, refreshToken) {
+export async function refreshIdToken(email, refreshToken, organization) {
     try {
-        const response = await fetch(`${refreshTokenUrl}?email=${email}&refresh_token=${refreshToken}`, {
+        const response = await fetch(`${refreshTokenUrl}?email=${email}&refresh_token=${refreshToken}&organization=${organization}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

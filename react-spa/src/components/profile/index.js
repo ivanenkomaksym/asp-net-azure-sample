@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { refreshIdToken } from '../../api';
 import ProfileStyles from "./Profile.module.css"
+import { loadUserFromLocalStorage } from '../../redux/reducers/auth';
 
 function Profile() {
   const [userInfo, setUserInfo] = useState(null);
@@ -9,12 +10,12 @@ function Profile() {
 
   // Retrieve user information from local storage
   useEffect(() => {
-    const userInfoFromLocalStorage = JSON.parse(localStorage.getItem('user_info'));
+    const userInfoFromLocalStorage = loadUserFromLocalStorage()
     setUserInfo(userInfoFromLocalStorage);
   }, []);
 
   const handleRefreshToken = async () => {
-    const { id_token } = await refreshIdToken(userInfo.email, userInfo.refresh_token);
+    const { id_token } = await refreshIdToken(userInfo.email, userInfo.refresh_token, userInfo.organization);
 
     // Update userInfo with new id_token
     const updatedUserInfo = { ...userInfo, id_token };
@@ -50,6 +51,10 @@ function Profile() {
               <tr>
                 <td>Identity Provider:</td>
                 <td>{userInfo.identityProvider}</td>
+              </tr>
+              <tr>
+                <td>Organization:</td>
+                <td>{userInfo.organization}</td>
               </tr>
               <tr>
                 <td>Id token:</td>

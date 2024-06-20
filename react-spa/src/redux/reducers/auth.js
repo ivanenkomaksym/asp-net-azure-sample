@@ -3,7 +3,7 @@ import * as actionType from '../const/actionsTypes';
 const authReducer = (state = { authData: null }, action) => {
   switch (action.type) {
     case actionType.AUTH:
-        localStorage.setItem('user_info', JSON.stringify({ ...action?.data }));
+        saveUserToLocalStorage(action?.data);
         console.log("[authReducer] setting into local storage: ", action.data)
         return { ...state, authData: action.data };
     case actionType.LOGOUT:
@@ -15,5 +15,13 @@ const authReducer = (state = { authData: null }, action) => {
       return state;
   }
 };
+
+export function saveUserToLocalStorage(user) {
+    localStorage.setItem('user_info', JSON.stringify({ ...user }));
+}
+
+export function loadUserFromLocalStorage() {
+    return JSON.parse(localStorage.getItem("user_info"));
+}
 
 export default authReducer;

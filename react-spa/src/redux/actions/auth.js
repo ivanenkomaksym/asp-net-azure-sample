@@ -7,11 +7,12 @@ import axios from 'axios';
 import User from "../../models/user"
 
 import { jwtDecode } from 'jwt-decode';
+import { loadUserFromLocalStorage } from "../reducers/auth";
 
 export const loadUser = () => async (dispath)=>{
     console.log("auth.loadUser");
     
-    const localUser = JSON.parse(localStorage.getItem("user_info"))
+    const localUser = loadUserFromLocalStorage();
 
     if(localUser){
         dispath({type: AUTH, data: localUser})
@@ -84,7 +85,14 @@ function handleGoogleResponse(response, id_token, dispatch, navigate) {
     console.log("email: ", email);
     console.log("picture: ", picture);
 
-    const user = new User(firstName, lastName, email, picture, GOOGLE_IP, id_token, null);
+    const user = new User(/*firstName       */firstName,
+                          /*lastName        */lastName,
+                          /*email           */email,
+                          /*picture         */picture,
+                          /*identityProvider*/GOOGLE_IP,
+                          /*id_token        */id_token,
+                          /*refresh_token   */null,
+                          /*organization    */null);
 
     dispatch({ type: AUTH, data: user });
     navigate("/");
@@ -104,7 +112,14 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             console.log("lastName: ", lastName);
             console.log("email: ", email);
 
-            const user = new User(firstName, lastName, email, null, MICROSOFT_IP, response.accessToken, null);
+            const user = new User(/*firstName       */firstName,
+                                  /*lastName        */lastName,
+                                  /*email           */email,
+                                  /*picture         */picture,
+                                  /*identityProvider*/MICROSOFT_IP,
+                                  /*id_token        */response.accessToken,
+                                  /*refresh_token   */null,
+                                  /*organization    */null);
 
             dispatch({type : AUTH, data: user})
             navigate("/")
@@ -120,6 +135,8 @@ export const signinOrg = (id_token, refresh_token, navigate) => async (dispatch)
     try{
         const decodedToken = jwtDecode(id_token);
         console.log(decodedToken);
+
+        const localUser = loadUserFromLocalStorage();
       
         // Example of extracting user info
         const firstName = decodedToken.given_name;
@@ -127,7 +144,14 @@ export const signinOrg = (id_token, refresh_token, navigate) => async (dispatch)
         const email = decodedToken.email || decodedToken.unique_name;
         const profilePicture = decodedToken.picture;
 
-        const user = new User(firstName, lastName, email, profilePicture, ORGANIZATION, id_token, refresh_token);
+        const user = new User(/*firstName       */firstName,
+                              /*lastName        */lastName,
+                              /*email           */email,
+                              /*picture         */profilePicture,
+                              /*identityProvider*/ORGANIZATION,
+                              /*id_token        */id_token,
+                              /*refresh_token   */refresh_token,
+                              /*organization    */localUser.organization);
 
         dispatch({type : AUTH, data: user})
         navigate("/")
