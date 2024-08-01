@@ -81,8 +81,15 @@ export const weatherForecastTokenRequest = {
     prompt: "consent"
 };
 
+const featureFlags = {
+    selectOrganization: true
+};
+
+export default featureFlags;
+
 export const loginUrl = "http://localhost:5000/login";
 export const registerUrl = "http://localhost:5000/register";
 export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
 export const organizationsUrl = "[Enter your /organizations endpoint]";
 export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
+export const refreshTokenUrl = "[Enter your /refresh endpoint]";
