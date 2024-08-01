@@ -1,0 +1,26 @@
+.container {
+    padding: 20px;
+    max-width: 400px;
+    margin: auto;
+    font-family: Arial, sans-serif;
+  }
+  
+  .buttonContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Space between buttons */
+  }
+  
+  .button {
+    padding: 10px 20px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    display: block; /* To separate buttons vertically */
+    width: 100%; /* Full-width buttons */
+    text-align: center; /* Centered text */
+  }
+  

@@ -154,7 +154,6 @@ export const signinOrg = (id_token, refresh_token, navigate) => async (dispatch)
                               /*organization    */localUser.organization);
 
         dispatch({type : AUTH, data: user})
-        navigate("/")
     }catch(err){
         console.log(err);
     }

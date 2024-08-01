@@ -82,7 +82,7 @@ export const weatherForecastTokenRequest = {
 };
 
 const featureFlags = {
-    selectOrganization: true
+    selectOrganization: false
 };
 
 export default featureFlags;
@@ -91,5 +91,6 @@ export const loginUrl = "http://localhost:5000/login";
 export const registerUrl = "http://localhost:5000/register";
 export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
 export const organizationsUrl = "[Enter your /organizations endpoint]";
+export const environmentsUrl = "[Enter your /environments endpoint]";
 export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
 export const refreshTokenUrl = "[Enter your /refresh endpoint]";

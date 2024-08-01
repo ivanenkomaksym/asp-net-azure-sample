@@ -1,6 +1,6 @@
 import axios from "axios"
 
-import { loginUrl, registerUrl, organizationsUrl, refreshTokenUrl, weatherForecastUrl } from "../authConfig";
+import { loginUrl, registerUrl, organizationsUrl, environmentsUrl, refreshTokenUrl, weatherForecastUrl } from "../authConfig";
 
 export async function signIn(data) {
     const instance = axios.create({
@@ -53,6 +53,20 @@ export async function weatherForecast(accessToken) {
     });
 
     const response = await instance.get(weatherForecastUrl);
+    return response.data;
+}
+
+export async function environments(accessToken) {
+    const instance = axios.create({
+        headers: {
+            'Authorization': `Bearer ${accessToken}`,
+            'Access-Control-Allow-Origin': '*',
+            'Content-Type': 'application/json',
+            mode: 'no-cors'
+        }
+    });
+
+    const response = await instance.get(environmentsUrl);
     return response.data;
 }
 
