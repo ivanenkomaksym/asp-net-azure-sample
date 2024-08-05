@@ -2,13 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import { signinOrg } from '../../redux/actions/auth';
-import { environments } from "../../api";
+import { environments, redirectToEnvironment, redirectToEnvironmentXMLHttpRequest, redirectToEnvironmentFetch } from "../../api";
 import CallbackStyles from "./Callback.module.css"
 
 function Callback() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const [environmentList, setEnvironmentList] = useState([]);
+  const [idToken, setIdToken] = useState('');
 
   useEffect(() => {
     console.log('Callback component mounted');
@@ -18,6 +19,7 @@ function Callback() {
     const refreshToken = query.get('refresh_token');
 
     if (idToken) {
+      setIdToken(idToken);
       // Handle successful login response
       console.log(`Organization login successful. idToken: ${idToken}\nrefreshToken: ${refreshToken}`);
       dispatch(signinOrg(idToken, refreshToken, navigate));
@@ -38,18 +40,12 @@ function Callback() {
     }
   }, [navigate]);
 
-    const handleButtonClick = async (id) => {
-      try {
-          const response = await axios.post(anotherApiUrl, { id }, {
-              headers: {
-                  'Authorization': `Bearer ${accessToken}`,
-                  'Content-Type': 'application/json'
-              }
-          });
-          console.log('API response:', response.data);
-      } catch (error) {
-          console.error('Error calling another API:', error);
-      }
+  const handleButtonClick = async (id) => {
+    try {
+      await redirectToEnvironment(idToken, id);
+  } catch (error) {
+      console.error('Failed to redirect:', error);
+  }
   };
 
   return (        

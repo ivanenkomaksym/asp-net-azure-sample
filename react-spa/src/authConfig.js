@@ -92,5 +92,6 @@ export const registerUrl = "http://localhost:5000/register";
 export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
 export const organizationsUrl = "[Enter your /organizations endpoint]";
 export const environmentsUrl = "[Enter your /environments endpoint]";
+export const redirectToEnvironmentUrl = "[Enter your /redirect_to_environment endpoint]";
 export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
 export const refreshTokenUrl = "[Enter your /refresh endpoint]";

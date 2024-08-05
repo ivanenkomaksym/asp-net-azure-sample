@@ -1,6 +1,6 @@
-import axios from "axios"
+ import axios from "axios"
 
-import { loginUrl, registerUrl, organizationsUrl, environmentsUrl, refreshTokenUrl, weatherForecastUrl } from "../authConfig";
+import { loginUrl, registerUrl, organizationsUrl, environmentsUrl, redirectToEnvironmentUrl, refreshTokenUrl, weatherForecastUrl } from "../authConfig";
 
 export async function signIn(data) {
     const instance = axios.create({
@@ -68,6 +68,10 @@ export async function environments(accessToken) {
 
     const response = await instance.get(environmentsUrl);
     return response.data;
+}
+
+export async function redirectToEnvironment(accessToken, environmentId) {
+    window.location.assign(`${redirectToEnvironmentUrl}?environment_id=${environmentId}`);
 }
 
 export async function weatherForecastWithCookies() {
