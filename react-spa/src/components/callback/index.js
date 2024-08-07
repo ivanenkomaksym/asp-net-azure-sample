@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {useDispatch} from 'react-redux';
 import { signinOrg } from '../../redux/actions/auth';
-import { environments, redirectToEnvironment, redirectToEnvironmentXMLHttpRequest, redirectToEnvironmentFetch } from "../../api";
+import { environments, redirectToEnvironment } from "../../api";
 import CallbackStyles from "./Callback.module.css"
 
 function Callback() {

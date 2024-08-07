@@ -9,6 +9,7 @@ import Nav from "./components/nav/index"
 import Profile from "./components/profile/index"
 import LoginOrg from "./components/loginorg/index"
 import Callback from './components/callback/index'
+import Portal from './components/portal/index'
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
         <Route path="/account/profile" element={<Profile />} />
         <Route path="/account/loginorg" element={<LoginOrg />} />
         <Route path="/callback" element={<Callback />} />
+        <Route path="/customer_portal" element={<Portal />} />
       </Routes>
     </div>
   );
