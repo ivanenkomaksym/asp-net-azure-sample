@@ -27,40 +27,43 @@ namespace AspNetAzureSample.Models.Identity
 
             await CreateUserAsync(user, password);
 
-            var superAdminInRole = await _userManager.IsInRoleAsync(user, role.Name);
+            var roleName = role.Name ?? throw new ArgumentNullException(nameof(role.Name));
+            var superAdminInRole = await _userManager.IsInRoleAsync(user, roleName);
             if (!superAdminInRole)
                 await _userManager.AddToRoleAsync(user, role.Name);
         }
 
         private async Task CreateRoleAsync(IdentityRole role)
         {
-            var exits = await _roleManager.RoleExistsAsync(role.Name);
+            var roleName = role.Name ?? throw new ArgumentNullException(nameof(role.Name));
+            var exits = await _roleManager.RoleExistsAsync(roleName);
             if (!exits)
                 await _roleManager.CreateAsync(role);
         }
 
         private async Task CreateUserAsync(IdentityUser user, string password)
         {
-            var exists = await _userManager.FindByEmailAsync(user.Email);
+            var userEmail = user.Email ?? throw new ArgumentNullException(nameof(user.Email));
+            var exists = await _userManager.FindByEmailAsync(userEmail);
             if (exists == null)
                 await _userManager.CreateAsync(user, password);
         }
 
-        private static IdentityRole AdminRole = new IdentityRole
+        private static readonly IdentityRole AdminRole = new()
         {
             Id = "cac43a6e-f7bb-4448-baaf-1add431ccbbf",
             Name = "SuperAdmin",
             NormalizedName = "SUPERADMIN"
         };
 
-        private static IdentityRole UserRole = new IdentityRole
+        private static readonly IdentityRole UserRole = new()
         {
             Id = "4413f3b1-299d-448c-ace0-cb4a22e3558e",
             Name = "User",
             NormalizedName = "USER"
         };
 
-        private static IdentityUser AdminUser = new IdentityUser
+        private static readonly IdentityUser AdminUser = new()
         {
             Id = "b8633e2d-a33b-45e6-8329-1958b3252bbd",
             UserName = "admin@example.com",
@@ -70,7 +73,7 @@ namespace AspNetAzureSample.Models.Identity
             EmailConfirmed = true,
         };
 
-        private static IdentityUser AliceUser = new IdentityUser
+        private static readonly IdentityUser AliceUser = new()
         {
             Id = "de1e0d65-aa11-4953-b074-1ba0b825851b",
             UserName = "alice@example.com",
@@ -80,7 +83,7 @@ namespace AspNetAzureSample.Models.Identity
             EmailConfirmed = true,
         };
 
-        private static IdentityUser BobUser = new IdentityUser
+        private static readonly IdentityUser BobUser = new()
         {
             Id = "33d069d9-a8c1-4e45-b51a-1ec42b219eb7",
             UserName = "bob@example.com",

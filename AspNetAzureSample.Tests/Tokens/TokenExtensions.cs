@@ -105,7 +105,7 @@ namespace AspNetAzureSample.Tests.Tokens
                 new Claim(JwtRegisteredClaimNames.Sub, userId),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(JwtRegisteredClaimNames.Iss, issuer),
-                new Claim(JwtRegisteredClaimNames.Aud, audience),
+                new Claim(JwtRegisteredClaimNames.Aud, audience ?? string.Empty),
                 new Claim(ClaimTypes.NameIdentifier, userId)
             };
 

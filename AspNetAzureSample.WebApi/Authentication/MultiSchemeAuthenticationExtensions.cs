@@ -20,7 +20,7 @@ namespace AspNetAzureSample.Authentication
         {
             options.ForwardDefaultSelector = context =>
             {
-                string token = context.Request.Headers["Authorization"].FirstOrDefault()?.Split(' ').Last();
+                string? token = context.Request.Headers.Authorization.FirstOrDefault()?.Split(' ').Last();
 
                 if (!string.IsNullOrEmpty(token))
                 {

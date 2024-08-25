@@ -9,17 +9,17 @@ namespace AspNetAzureSample.Extensions
         {
             using (var scope = webHost.Services.CreateScope())
             {
-                using (var appContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>())
+                var logger = webHost.Services.GetRequiredService<ILogger<Program>>();
+                using var appContext = scope.ServiceProvider.GetRequiredService<ApplicationContext>();
+                try
                 {
-                    try
-                    {
-                        appContext.Database.Migrate();
-                    }
-                    catch (Exception ex)
-                    {
-                        //Log errors or do anything you think it's needed
-                        throw;
-                    }
+                    appContext.Database.Migrate();
+                }
+                catch (Exception ex)
+                {
+                    logger.LogError(ex, "An error occurred during database migration.");
+                    //Log errors or do anything you think it's needed
+                    throw;
                 }
             }
 

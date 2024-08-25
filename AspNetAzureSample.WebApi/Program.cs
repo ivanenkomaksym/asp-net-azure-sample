@@ -51,7 +51,7 @@ if (storageOptions.StorageType == StorageOptions.StorageTypes.InMemory)
     services.AddDbContext<ApplicationContext>(opts =>
         opts.UseInMemoryDatabase("AppDb"));
 }
-else if (storageOptions.StorageType == StorageOptions.StorageTypes.MySql)
+else if (storageOptions.StorageType == StorageOptions.StorageTypes.MySql && storageOptions.MySqlConnection != null)
 {
     services.AddDbContext<ApplicationContext>(opts =>
         opts.UseMySQL(storageOptions.MySqlConnection));
@@ -237,10 +237,11 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowSpecificOrigin",
         builder =>
         {
-            builder.WithOrigins(corsOrigin)
-                   .AllowAnyHeader()
-                   .AllowAnyMethod()
-                   .AllowCredentials();
+            if (corsOrigin != null)
+                builder.WithOrigins(corsOrigin)
+                       .AllowAnyHeader()
+                       .AllowAnyMethod()
+                       .AllowCredentials();
         });
 });
 
@@ -287,7 +288,7 @@ app.UseSwaggerUI(c =>
 app.MapControllers();
 
 if (storageOptions.StorageType != StorageOptions.StorageTypes.InMemory)
-    app.MigrateDatabase();
+     app.MigrateDatabase();
 
 app.Run();
 
