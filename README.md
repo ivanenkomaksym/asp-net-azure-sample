@@ -7,6 +7,7 @@ This sample demonstrates how to configure ASP.NET application for:
 - Application only permissions (based on [Get access without a user](https://learn.microsoft.com/en-us/graph/auth-v2-service) and [A .NET Core daemon console application calling a protected Web API with its own identity](https://github.com/Azure-Samples/active-directory-dotnetcore-daemon-v2/tree/master/2-Call-OwnApi))
 - Use multiple authentication schemes: AzureAD, Google and Cookie-based
 - Get Microsoft/Google access tokens programatically for automated testing
+- Microsoft Identity to manage users and roles.
 
 ## Dependencies
 [.NET8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
@@ -127,6 +128,14 @@ info: AspNetAzureSample.UserProviders.DefaultUserProvider[0]
   "password": "string1!"
 }
 ```
+
+You can also use hardcoded users:
+```
+admin@example.com   P@ssword1
+alice@example.com   P@ssword1
+bob@example.com     P@ssword1
+```
+
 7. Execute `/login` with the same body. Set `useCookies` to `true`. New cookie will appear in the browser, a sample cookie record is shown:
 ![Alt text](docs/cookie.png?raw=true "Cookie")
 9. Confirm you can again execute http://localhost:5000/WeatherForecast. In this case **Identity.BearerAndApplication** authentication scheme is challenged.
@@ -145,7 +154,12 @@ You can switch between storage types by **Storage:StorageType** property in the 
 * MySql
 * SqlServer
 
-If you want to switch between different database:
+To run MySql docker image:
+```
+docker run -d --name mysql-container -e MYSQL_ROOT_PASSWORD=my-secret-pw -e MYSQL_DATABASE=TweetsDb -e MYSQL_USER=myuser -e MYSQL_PASSWORD=mypassword -p 3306:3306 mysql:latest
+```
+
+If you want to switch between different databases:
 
 ```sh
 dotnet ef migrations remove
