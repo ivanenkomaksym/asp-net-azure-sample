@@ -11,7 +11,10 @@ This sample demonstrates how to configure ASP.NET application for:
 ## Dependencies
 [.NET8](https://dotnet.microsoft.com/en-us/download/dotnet/8.0)
 
-## How to run this sample
+## Authentication
+
+### Azure
+
 1. Sign in to the [Azure portal](https://portal.azure.com) using either a work or school account or a personal Microsoft account
 2. Register the service web application
    - In the **Supported account types** section, select **Accounts in any organizational directory**
@@ -34,28 +37,20 @@ This sample demonstrates how to configure ASP.NET application for:
    - In the **API permissions** add **My APIs**, select service application from step 2, choose **Application permissions** and **access_as_application**.
    - At this stage permissions are assigned correctly but the client app does not allow interaction. Therefore no consent can be presented via a UI and accepted to use the service app. Click the Grant/revoke admin consent for {tenant} button, and then select Yes when you are asked if you want to grant consent for the requested permissions for all account in the tenant. You need to be an Azure AD tenant admin to do this.
 6. Fill in **appsettings.json**
-7. Fill in **wwwroot\js\clientConfig.js**
-8. Start application
-9. Click **Sign in** using accounts from different tenants
-10. Click **Weather Forecast** button to access service web application
-   - https://localhost:44321/WeatherForecast is accessible from all accounts that belong to **AcceptedTenantIds** list in **appsettings.json**
-11. Swagger page is accessible via https://localhost:44321/swagger
-12. In **Postman** get an access token as described in [Get an access token](https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token)
-   - POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
-   - client_id={daemon app client id from step 4}
-   - scope={service app client id from step2}/.default
-   - client_secret={daemon app client secret from step 4}
-   - grant_type=client_credentials
-13. Using generated token access https://localhost:44321/Maintenance
+7. Fill in **react-spa\src\authConfig.js**
+8. Start server application by running **dotnet run** in **AspNetAzureSample.WebApi** (running on http://localhost:5000 by default).
+9. Start client application by running **npm start** in **react-spa** (running on http://localhost:3000 by default).
 
-## Authentication with Google
+## Google Cloud Provider
+
 1. Sign in to the [Google Console](https://console.cloud.google.com)
 2. In **APIs & Services**/**Credentials** create new credentials
-3. Configure necessary Javascript origins and redirect URIs, including https://developers.google.com/oauthplayground
-4. Go to [OAuth2 Playground](https://developers.google.com/oauthplayground)
-5. Press top right settings (gear) icon (OAuth 2.0 configuration)
-6. Tick **Use your own OAuth credentials** and enter OAuth Client ID and OAuth Client secret
-7. At the bottom enter scopes:
+3. In the **appsettings.json** set **Google:Enable** to **true** and fill in **Google:ClientId**.
+4. Configure necessary Javascript origins and redirect URIs, including https://developers.google.com/oauthplayground
+5. Go to [OAuth2 Playground](https://developers.google.com/oauthplayground)
+6. Press top right settings (gear) icon (OAuth 2.0 configuration)
+7. Tick **Use your own OAuth credentials** and enter OAuth Client ID and OAuth Client secret
+8. At the bottom enter scopes:
 ```
 openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile
 ```
@@ -67,6 +62,39 @@ openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com
 ```
 curl -d "client_id=YOUR_APP_CLIENT_ID&client_secret=YOUR_APP_CLIENT_SECRET&grant_type=refresh_token&refresh_token=YOUR_APP_REFRESH_TOKEN" "https://oauth2.googleapis.com/token"
 ```
+
+## How to use this sample
+
+### Swagger UI
+1. Open http://localhost:5000/swagger/index.html
+2. Click **Authorize** using accounts from different tenants.
+
+### Access from daemon client application without real user
+1. In **Postman** get an access token as described in [Get an access token](https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token)
+   - POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
+   - client_id={daemon app client id from step 4}
+   - scope={service app client id from step2}/.default
+   - client_secret={daemon app client secret from step 4}
+   - grant_type=client_credentials
+2. Using generated token access https://localhost:5000/Maintenance
+
+### React Single Page Application
+
+1. Open http://localhost:3000/
+2. Click **Login** and choose one of the supported options:
+	* Sign in with Google Access Token
+	* Google one tap
+	* Microsoft
+
+![Alt text](docs/login.png?raw=true "Login")
+
+3. Click **Get Weather** button. It will send the request to server with corresponding bearer token.
+
+![Alt text](docs/callAPI.png?raw=true "Call API")
+
+4. Click **Profile** to see your profile's information retrieved from the corresponding identity provider.
+
+![Alt text](docs/profile.png?raw=true "Profile")
 
 ## Authentication for Testing
 
@@ -80,25 +108,7 @@ dotnet run --environment Testing
 
 When running in this mode, attempting to access the API without proper authentication in Swagger or a client will be restricted. However, you can still access the API by including the header `X-Testing-Name=<username>` in the request, for instance, when using Postman at https://localhost:44321/WeatherForecast.
 
-## Multiple authentication schemes
-1. In the **appsettings.json** set **AzureAd:Enable** and **Google:Enable** to **true** and fill in **Google:ClientId**.
-2. Execute **npm start** in **react-spa** folder to launch frontend client on http://localhost:3000.
-3. Click **Login** and choose one of the supported options:
-	* Sign in with Google Access Token
-	* Google one tap
-	* Microsoft
-
-![Alt text](docs/login.png?raw=true "Login")
-
-4. Click **Get Weather** button. It will send the request to server with corresponding bearer token.
-
-![Alt text](docs/callAPI.png?raw=true "Call API")
-
-5. Click **Profile** to see your profile's information retrieved from the corresponding identity provider.
-
-![Alt text](docs/profile.png?raw=true "Profile")
-
-### Cookie-based authentication
+## Cookie-based authentication
 1. Open Swagger UI via http://localhost:5000/swagger/index.html
 2. Click **Authorize** button and authenticate with your Microsoft credentials
 3. Confirm you can execute http://localhost:5000/WeatherForecast. In this case **Bearer** authentication scheme is challenged.
@@ -128,7 +138,7 @@ info: AspNetAzureSample.UserProviders.DefaultUserProvider[0]
 ```
 If you remove the cookie, authentication will again fail.
 
-### Storage support
+## Storage support
 
 You can switch between storage types by **Storage:StorageType** property in the **appsettings.json**:
 * InMemory
