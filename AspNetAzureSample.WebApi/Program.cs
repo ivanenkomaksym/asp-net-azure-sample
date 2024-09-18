@@ -1,4 +1,5 @@
 using AspNetAzureSample.Authentication;
+using AspNetAzureSample.Authorization;
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Extensions;
 using AspNetAzureSample.Models.Identity;
@@ -35,6 +36,18 @@ services.AddIdentityApiEndpoints<IdentityUser>(opt =>
     .AddRoles<IdentityRole>()   // AddIdentityApiEndpoints doesn't configure roles by default unline AddIdentity, so add it manually
     .AddEntityFrameworkStores<ApplicationContext>()
     .AddDefaultTokenProviders();
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("HealthCheckPolicy", policy =>
+    {
+        policy.RequireAuthenticatedUser();
+        policy.AddRequirements(new MinimumAgeRequirement("age", 18));
+    });
+});
+
+builder.Services.AddTransient<IAuthorizationHandler, MinimumAgeHandler>();
+builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, MinimumAgeAuthorizationResultTransformer>();
 
 services.AddTransient<IdentityDataSeeder>();
 services.AddHostedService<SetupIdentityDataSeeder>();
@@ -99,7 +112,7 @@ app.MapRazorPages();
 app.ConfigureSwagger(configuration);
 
 app.MapControllers();
-app.MapHealthChecks("/healthz").RequireAuthorization();
+app.MapHealthChecks("/healthz").RequireAuthorization("HealthCheckPolicy");
 
 app.MigrateDatabase(configuration);
 
