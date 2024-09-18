@@ -15,6 +15,7 @@ builder.Logging.AddAzureWebAppDiagnostics();
 builder.Host.UseNLog();
 
 builder.Services.AddRazorPages();
+builder.Services.AddHealthChecks();
 
 var configuration = builder.Configuration;
 var services = builder.Services;
@@ -98,6 +99,7 @@ app.MapRazorPages();
 app.ConfigureSwagger(configuration);
 
 app.MapControllers();
+app.MapHealthChecks("/healthz").RequireAuthorization();
 
 app.MigrateDatabase(configuration);
 
