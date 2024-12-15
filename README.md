@@ -81,8 +81,12 @@ curl -d "client_id=YOUR_APP_CLIENT_ID&client_secret=YOUR_APP_CLIENT_SECRET&grant
 
 ### React Single Page Application
 
-1. Open http://localhost:3000/
-2. Click **Login** and choose one of the supported options:
+1. Execute in **react-spa** directory:
+```sh
+npm start
+```
+2. Open http://localhost:3000/
+3. Click **Login** and choose one of the supported options:
 	* Sign in with Google Access Token
 	* Google one tap
 	* Microsoft

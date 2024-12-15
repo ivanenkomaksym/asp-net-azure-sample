@@ -60,7 +60,7 @@ namespace AspNetAzureSample.Extensions
                     options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
                 })
                     .AddCookie()
-                    .AddJwtBearer("Google", options =>
+                    .AddJwtBearer(MultiSchemeAuthenticationExtensions.GoogleScheme, options =>
                     {
                         options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
                         options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
