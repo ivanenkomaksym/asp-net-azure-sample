@@ -52,6 +52,9 @@ namespace AspNetAzureSample.Extensions
             var googleOptions = new GoogleOptions();
             configuration.Bind(GoogleOptions.Name, googleOptions);
 
+            var auth0Options = new Auth0Options();
+            configuration.Bind(Auth0Options.Name, auth0Options);
+
             if (azureadOptions.Enable && googleOptions.Enable)
             {
                 services.AddAuthentication(options =>
@@ -67,8 +70,8 @@ namespace AspNetAzureSample.Extensions
                     })
                     .AddJwtBearer(MultiSchemeAuthenticationExtensions.Auth0Scheme, options =>
                     {
-                        options.Authority = "https://{your-auth0-domain}/";
-                        options.Audience = "{your-auth0-audience}";
+                        options.Authority = auth0Options.Authority;
+                        options.Audience = auth0Options.Audience;
                     })
                     .AddPolicyScheme(MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
                                      MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
