@@ -56,8 +56,8 @@ namespace AspNetAzureSample.Extensions
             {
                 services.AddAuthentication(options =>
                 {
-                    options.DefaultScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
-                    options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme;
+                    options.DefaultScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme;
+                    options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme;
                 })
                     .AddCookie()
                     .AddJwtBearer(MultiSchemeAuthenticationExtensions.GoogleScheme, options =>
@@ -65,8 +65,13 @@ namespace AspNetAzureSample.Extensions
                         options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
                         options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
                     })
-                    .AddPolicyScheme(MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme,
-                                     MultiSchemeAuthenticationExtensions.AzureOrGoogleAuthScheme,
+                    .AddJwtBearer(MultiSchemeAuthenticationExtensions.Auth0Scheme, options =>
+                    {
+                        options.Authority = "https://{your-auth0-domain}/";
+                        options.Audience = "{your-auth0-audience}";
+                    })
+                    .AddPolicyScheme(MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
+                                     MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
                                      options =>
                                      {
                                          options.SelectDefaultSchemeForCurrentRequest();

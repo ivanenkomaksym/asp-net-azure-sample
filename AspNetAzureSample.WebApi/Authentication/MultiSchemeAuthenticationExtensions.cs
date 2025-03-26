@@ -7,7 +7,8 @@ namespace AspNetAzureSample.Authentication
     public static class MultiSchemeAuthenticationExtensions
     {
         public static readonly string GoogleScheme = "Google";
-        public static readonly string AzureOrGoogleAuthScheme = "Azure_OR_Google_OR_Cookie";
+        public static readonly string AzureOrGoogleOrAuth0AuthScheme = "Azure_OR_Google_OR_Auth0_OR_Cookie";
+        public static readonly string Auth0Scheme = "Auth0";
 
         /// <summary>
         /// Used to select a default scheme for the current request that authentication handlers should forward all authentication operations to by default
@@ -35,6 +36,8 @@ namespace AspNetAzureSample.Authentication
                             return JwtBearerDefaults.AuthenticationScheme;
                         else if (issuer == "https://accounts.google.com")
                             return GoogleScheme;
+                        else if (issuer.Contains("auth0.com"))
+                            return Auth0Scheme;
                     }
                 }
 
