@@ -68,7 +68,7 @@ services.AddControllersWithViews(options =>
 });
 
 // Read CORS configuration from appsettings.json
-var corsOrigin = configuration["UseCors:AllowOrigin"];
+var corsOrigin = configuration.GetSection("UseCors:AllowOrigins").Get<string[]>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

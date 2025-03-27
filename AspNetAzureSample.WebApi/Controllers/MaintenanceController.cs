@@ -23,6 +23,15 @@ namespace AspNetAzureSample.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = AuthorizationPolicies.CycleManagementPolicy)]
+        [HttpPost("InitializeCycle")]
+        public IActionResult InitializeCycle()
+        {
+            var _ = UserProvider.GetUserName(HttpContext);
+
+            return Ok();
+        }
+
         private readonly IUserProvider UserProvider;
     }
 }

@@ -159,6 +159,8 @@ namespace AspNetAzureSample.Extensions
             {
                 if (azureadOptions.RoleName != null)
                     opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureadOptions.RoleName));
+
+                opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("permissions", auth0Options.CycleManagementPermission));
             });
 
             services.AddEndpointsApiExplorer();
