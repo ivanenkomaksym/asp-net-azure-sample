@@ -42,13 +42,13 @@ function Home() {
             username = currentAccounts[0].username;
         }
 
-        request.account = myMSALObj.setActiveAccount(username);
+        request.account = currentAccounts[0];
 
         console.log("request: ", JSON.stringify(request, null, 2));
 
         return myMSALObj.acquireTokenSilent(request)
             .catch(error => {
-                console.warn("silent token acquisition fails. acquiring token using popup");
+                console.warn("silent token acquisition fails. acquiring token using popup, error: ", error);
                 if (error instanceof InteractionRequiredAuthError) {
                     // fallback to interaction when silent call fails
                     return myMSALObj.acquireTokenPopup(request)
