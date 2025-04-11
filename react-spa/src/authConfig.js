@@ -95,3 +95,5 @@ export const environmentsUrl = process.env.REACT_APP_ENVIRONMENTS_URL || "http:/
 export const redirectToEnvironmentUrl = process.env.REACT_APP_REDIRECT_TO_ENVIRONMENT_URL || "http://localhost:5000/redirectToEnvironment";
 export const loginOrgAuthorizeUrl = process.env.REACT_APP_LOGIN_ORG_AUTHORIZE_URL || "http://localhost:5000/loginOrgAuthorize";
 export const refreshTokenUrl = process.env.REACT_APP_REFRESH_TOKEN_URL || "http://localhost:5000/refreshToken";
+
+export const signInToOrganizations = process.env.REACT_APP_MICROSOFT_SIGN_IN_TO_ORGANIZATION === "true";

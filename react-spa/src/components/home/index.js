@@ -6,7 +6,7 @@ import { Link  } from 'react-router-dom';
 import HomeStyles from "./Home.module.css"
 
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
-import { weatherForecastTokenRequest, msalConfig } from '../../authConfig';
+import { weatherForecastTokenRequest, msalConfig, signInToOrganizations } from '../../authConfig';
 import { MICROSOFT_IP, GOOGLE_IP, ORGANIZATION } from '../../redux/const/actionsTypes';
 
 function Home() {
@@ -43,6 +43,10 @@ function Home() {
         }
 
         request.account = currentAccounts[0];
+        if (signInToOrganizations) {
+            // Replace with account's tenant ID after signing in to organizations with multiple tenant app
+            request.authority = `https://login.microsoftonline.com/${request.account.tenantId}`;
+        }
 
         console.log("request: ", JSON.stringify(request, null, 2));
 
