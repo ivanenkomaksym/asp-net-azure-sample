@@ -6,7 +6,7 @@
 import { LogLevel } from "@azure/msal-browser";
 
 export const gsiConfig = {
-    client_id: '438557524836-iule8uso69s7n6jsho4q3j2i5umh0qp0.apps.googleusercontent.com',
+    client_id: process.env.REACT_APP_GOOGLE_CLIENT_ID,
     auto_select: false // automatically sign in, see: https://developers.google.com/identity/gsi/web/guides/automatic-sign-in-sign-out
 }
 
@@ -18,9 +18,9 @@ export const gsiConfig = {
 
 export const msalConfig = {
     auth: {
-        clientId: "ea684d3c-e084-49b8-a429-5075aff9d32b",
-        authority: "https://login.microsoftonline.com/6956efa6-895b-430f-b07b-45feb79f24eb",
-        redirectUri: "http://localhost:3000",
+        clientId: process.env.REACT_APP_MICROSOFT_CLIENT_ID,
+        authority: `https://login.microsoftonline.com/${process.env.REACT_APP_MICROSOFT_TENANT_ID}`,
+        redirectUri: "http://localhost:3000"
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -76,7 +76,7 @@ export const graphConfig = {
  * https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/resources-and-scopes.md
  */
 export const weatherForecastTokenRequest = {
-    scopes: ["0a870d70-60dc-46ef-b913-58942a5ba00d/access_as_user"],
+    scopes: [process.env.REACT_APP_MICROSOFT_SCOPE],
     forceRefresh: false, // Set this to "true" to skip a cached token and go to the server to get a new token
     prompt: "consent"
 };
@@ -87,11 +87,11 @@ const featureFlags = {
 
 export default featureFlags;
 
-export const loginUrl = "http://localhost:5000/login";
-export const registerUrl = "http://localhost:5000/register";
-export const weatherForecastUrl = "http://localhost:5000/WeatherForecast";
-export const organizationsUrl = "[Enter your /organizations endpoint]";
-export const environmentsUrl = "[Enter your /environments endpoint]";
-export const redirectToEnvironmentUrl = "[Enter your /redirect_to_environment endpoint]";
-export const loginOrgAuthorizeUrl = "[Enter your /authorize endpoint]";
-export const refreshTokenUrl = "[Enter your /refresh endpoint]";
+export const loginUrl = process.env.REACT_APP_LOGIN_URL || "http://localhost:5000/login";
+export const registerUrl = process.env.REACT_APP_REGISTER_URL || "http://localhost:5000/register";
+export const weatherForecastUrl = process.env.REACT_APP_WEATHER_FORECAST_URL || "http://localhost:5000/weatherforecast";
+export const organizationsUrl = process.env.REACT_APP_ORGANIZATIONS_URL || "http://localhost:5000/organizations";
+export const environmentsUrl = process.env.REACT_APP_ENVIRONMENTS_URL || "http://localhost:5000/environments";
+export const redirectToEnvironmentUrl = process.env.REACT_APP_REDIRECT_TO_ENVIRONMENT_URL || "http://localhost:5000/redirectToEnvironment";
+export const loginOrgAuthorizeUrl = process.env.REACT_APP_LOGIN_ORG_AUTHORIZE_URL || "http://localhost:5000/loginOrgAuthorize";
+export const refreshTokenUrl = process.env.REACT_APP_REFRESH_TOKEN_URL || "http://localhost:5000/refreshToken";
