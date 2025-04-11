@@ -115,7 +115,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             const user = new User(/*firstName       */firstName,
                                   /*lastName        */lastName,
                                   /*email           */email,
-                                  /*picture         */picture,
+                                  /*picture         */null,
                                   /*identityProvider*/MICROSOFT_IP,
                                   /*id_token        */response.accessToken,
                                   /*refresh_token   */null,
