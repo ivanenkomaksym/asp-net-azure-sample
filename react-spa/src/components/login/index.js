@@ -5,7 +5,7 @@ import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { signinGoogleWithAccessToken, signinGoogleWithIdToken, signin, signinMicrosoft } from "../../redux/actions/auth";
 import { useMsal } from "@azure/msal-react";
-import { loginRequest } from "../../authConfig";
+import { auth0Config, loginRequest } from "../../authConfig";
 import { GoogleLogin } from '@react-oauth/google';
 import { useAuth0 } from "@auth0/auth0-react";
 
@@ -41,11 +41,17 @@ function Login() {
             });
     }
 
-    const Auth0LoginButton = () => {
-        const { loginWithRedirect } = useAuth0();
+    // Auth0 login
+    const { loginWithPopup } = useAuth0();
 
-        return <button onClick={() => loginWithRedirect()}>Log In</button>;
-    };
+    const Auth0Login = async () => {
+        
+        await loginWithPopup({
+            authorizationParams: {
+            org_id: auth0Config.organization
+            }
+        });
+    }
 
     const [validationErrors, setValidationErrors] = useState(""); // State to store validation errors
     const errorHandler = (err) => {        
@@ -120,8 +126,12 @@ function Login() {
                 <button className={LoginStyles.organizationBTN} onClick={handleLoginOrgClick}>
                     Sign in with organization
                 </button>
+                <p />
 
-                <Auth0LoginButton />
+                <button className={LoginStyles.auth0BTN} onClick={Auth0Login}>
+                   Sign in with Auth0
+                </button>
+                <p />
 
                 <span className={LoginStyles.notreg}>Not registered yet? <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
             </div>

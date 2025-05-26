@@ -55,7 +55,8 @@ export const msalConfig = {
 
 export const auth0Config = {
     domain: process.env.REACT_APP_AUTH0_DOMAIN || "dev-123456.us.auth0.com",
-    clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "1234567890abcdef"
+    clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "1234567890abcdef",
+    organization: process.env.REACT_APP_AUTH0_ORGANIZATION || "org_123456",
 };
 
 /**

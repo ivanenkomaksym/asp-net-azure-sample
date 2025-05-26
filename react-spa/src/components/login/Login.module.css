@@ -109,6 +109,21 @@
     background-color: #005812;
 }
 
+.auth0BTN {
+    padding: 15px;
+    width: 100%;
+    border: 0px none;
+    background-color: #000000; /* Auth0 Black */
+    border-radius: .5rem;
+    color: white;
+    transition: all 0.4s;
+}
+
+.auth0BTN:hover {
+    transition: all 0.4s;
+    background-color: #333333; /* Darker Auth0 Black on hover */
+}
+
 .singupBTN{
     color:black;
 }
