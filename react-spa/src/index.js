@@ -5,7 +5,7 @@ import App from './App';
 import { Provider } from 'react-redux';
 import { PublicClientApplication } from '@azure/msal-browser';
 import { MsalProvider } from '@azure/msal-react';
-import { msalConfig, gsiConfig } from './authConfig';
+import { msalConfig, gsiConfig, auth0Config } from './authConfig';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import {BrowserRouter} from "react-router-dom"
 
@@ -15,6 +15,7 @@ import { reducers } from "./redux/reducers"
 
 // Bootstrap components
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { Auth0Provider } from '@auth0/auth0-react';
 
 const msalInstance = new PublicClientApplication(msalConfig);
 
@@ -32,7 +33,14 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
         <BrowserRouter>
             <GoogleOAuthProvider clientId={gsiConfig.client_id}>
                 <MsalProvider instance={msalInstance}>
-                    <App />
+                    <Auth0Provider
+                      domain={auth0Config.domain}
+                      clientId={auth0Config.clientId}    
+                      authorizationParams={{
+                        redirect_uri: window.location.origin
+                      }}>
+                        <App />
+                    </Auth0Provider>
                 </MsalProvider>
             </GoogleOAuthProvider>,
       </BrowserRouter>

@@ -53,6 +53,11 @@ export const msalConfig = {
     }
 };
 
+export const auth0Config = {
+    domain: process.env.REACT_APP_AUTH0_DOMAIN || "dev-123456.us.auth0.com",
+    clientId: process.env.REACT_APP_AUTH0_CLIENT_ID || "1234567890abcdef"
+};
+
 /**
  * Scopes you add here will be prompted for user consent during sign-in.
  * By default, MSAL.js will add OIDC scopes (openid, profile, email) to any login request.

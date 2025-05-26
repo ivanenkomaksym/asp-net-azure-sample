@@ -7,6 +7,7 @@ import { signinGoogleWithAccessToken, signinGoogleWithIdToken, signin, signinMic
 import { useMsal } from "@azure/msal-react";
 import { loginRequest } from "../../authConfig";
 import { GoogleLogin } from '@react-oauth/google';
+import { useAuth0 } from "@auth0/auth0-react";
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -39,6 +40,12 @@ function Login() {
                 console.log(e);
             });
     }
+
+    const Auth0LoginButton = () => {
+        const { loginWithRedirect } = useAuth0();
+
+        return <button onClick={() => loginWithRedirect()}>Log In</button>;
+    };
 
     const [validationErrors, setValidationErrors] = useState(""); // State to store validation errors
     const errorHandler = (err) => {        
@@ -113,6 +120,8 @@ function Login() {
                 <button className={LoginStyles.organizationBTN} onClick={handleLoginOrgClick}>
                     Sign in with organization
                 </button>
+
+                <Auth0LoginButton />
 
                 <span className={LoginStyles.notreg}>Not registered yet? <Link className={LoginStyles.singupBTN} to="/account/signup">Signup</Link></span>
             </div>
