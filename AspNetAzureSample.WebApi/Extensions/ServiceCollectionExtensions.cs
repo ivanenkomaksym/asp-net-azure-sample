@@ -168,7 +168,26 @@ namespace AspNetAzureSample.Extensions
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherForecast", Version = "v1" });
 
-                if (azureadOptions.Enable)
+                if (auth0Options.Enable)
+                {
+                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                    {
+                        Type = SecuritySchemeType.OAuth2,
+                        Flows = new OpenApiOAuthFlows
+                        {
+                            Implicit = new OpenApiOAuthFlow
+                            {
+                                AuthorizationUrl = new Uri($"{auth0Options.Authority}authorize"),
+                                TokenUrl = new Uri($"{auth0Options.Authority}auth2/token"),
+                                Scopes = new Dictionary<string, string>
+                                {
+                                    { "audience", auth0Options.Audience }
+                                }
+                            }
+                        }
+                    });
+                }
+                else if (azureadOptions.Enable)
                 {
                     var host = azureadOptions.Instance;
                     var tenantId = azureadOptions.TenantId;
@@ -184,8 +203,9 @@ namespace AspNetAzureSample.Extensions
                             }
                         }
                     });
+                }
 
-                    c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
                     {
                         {
                             new OpenApiSecurityScheme {
@@ -194,10 +214,9 @@ namespace AspNetAzureSample.Extensions
                                     Id = "oauth2"
                                 },
                             },
-                            new List <string> {}
+                            new List <string> { auth0Options.Audience }
                         }
                     });
-                }
             });
         }
     }

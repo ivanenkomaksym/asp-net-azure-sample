@@ -30,7 +30,8 @@ namespace AspNetAzureSample.Authentication
 
                     if (jwtToken != null)
                     {
-                        string issuer = jwtToken.Issuer;
+                        // Improve this
+                        string issuer = jwtToken.Issuer ?? jwtToken.Header["iss"].ToString();
 
                         if (issuer.StartsWith("https://login.microsoftonline.com/"))
                             return JwtBearerDefaults.AuthenticationScheme;
