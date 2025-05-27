@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import LoginStyles from "./Login.module.css"
 import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
-import { signinGoogleWithAccessToken, signinGoogleWithIdToken, signin, signinMicrosoft } from "../../redux/actions/auth";
+import { signinGoogleWithAccessToken, signinGoogleWithIdToken, signin, signinMicrosoft, signinAuth0 } from "../../redux/actions/auth";
 import { useMsal } from "@azure/msal-react";
 import { auth0Config, loginRequest } from "../../authConfig";
 import { GoogleLogin } from '@react-oauth/google';
@@ -42,14 +42,30 @@ function Login() {
     }
 
     // Auth0 login
-    const { loginWithPopup } = useAuth0();
+    const { user, loginWithPopup, getAccessTokenWithPopup } = useAuth0();
 
     const Auth0Login = async () => {
-        
-        await loginWithPopup({
+        loginWithPopup({
             authorizationParams: {
             org_id: auth0Config.organization
             }
+        }).then(async (response) => {
+            console.log("Auth0 login successful:", response);
+            console.log("auth0 user:", user);
+            console.log("auth0 audience:", auth0Config.audience);
+
+            const token = await getAccessTokenWithPopup({ 
+                    authorizationParams: { 
+                        audience: auth0Config.audience,
+                        organization: auth0Config.organization
+                    }
+                });
+            console.log("Auth0 token:", token);
+            // You can dispatch an action here if needed
+            dispatch(signinAuth0(user, navigate));
+        }).catch((error) => {
+            console.error("Auth0 login failed:", error);
+            // Handle error appropriately
         });
     }
 

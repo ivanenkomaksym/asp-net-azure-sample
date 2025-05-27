@@ -1,4 +1,4 @@
-import {AUTH, GOOGLE_IP, MICROSOFT_IP, ORGANIZATION} from "../const/actionsTypes"
+import {AUTH, GOOGLE_IP, MICROSOFT_IP, ORGANIZATION, AUTH0} from "../const/actionsTypes"
 
 import { callMsGraph } from '../../graph';
 import * as api from "../../api/index"
@@ -124,6 +124,26 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
             dispatch({type : AUTH, data: user})
             navigate("/")
         });
+    }catch(err){
+        console.log(err);
+    }
+}
+
+export const signinAuth0 = (auth0user, navigate) => async (dispatch)=>{
+    console.log("auth.signinAuth0");
+
+    try{
+        const user = new User(/*firstName       */auth0user.givenName,
+                              /*lastName        */auth0user.familyName,
+                              /*email           */auth0user.email,
+                              /*picture         */auth0user.picture,
+                              /*identityProvider*/AUTH0,
+                              /*id_token        */null,
+                              /*refresh_token   */null,
+                              /*organization    */null);
+
+        dispatch({type : AUTH, data: user})
+        navigate("/")
     }catch(err){
         console.log(err);
     }
