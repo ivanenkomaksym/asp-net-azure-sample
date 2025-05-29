@@ -57,7 +57,9 @@ services.AddAutoMapper(typeof(Program));
 services.AddControllers();
 services.AddSingleton<IUserProvider, DefaultUserProvider>();
 
-services.ConfigureAuthentication(configuration);
+var swaggerConfigurator = SwaggerConfiguration.BuildSwaggerConfigurator(configuration);
+
+services.ConfigureAuthentication(configuration, swaggerConfigurator);
 
 services.AddControllersWithViews(options =>
 {
@@ -109,7 +111,7 @@ app.UseAuthorization();
 
 app.MapRazorPages();
 
-app.ConfigureSwagger(configuration);
+app.ConfigureSwagger(configuration, swaggerConfigurator);
 
 app.MapControllers();
 app.MapHealthChecks("/healthz").RequireAuthorization("HealthCheckPolicy");

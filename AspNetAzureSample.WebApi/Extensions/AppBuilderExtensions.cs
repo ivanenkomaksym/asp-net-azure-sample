@@ -1,4 +1,5 @@
-﻿using AspNetAzureSample.Configuration;
+﻿using AspNetAzureSample.Authentication;
+using AspNetAzureSample.Configuration;
 
 namespace AspNetAzureSample.Extensions
 {
@@ -13,34 +14,21 @@ namespace AspNetAzureSample.Extensions
                 app.MigrateDatabase();
         }
 
-        public static void ConfigureSwagger(this WebApplication app, ConfigurationManager configuration)
+        public static void ConfigureSwagger(this WebApplication app, ConfigurationManager configuration, ISwaggerConfigurator swaggerConfigurator)
         {
             var swaggerOptions = new SwaggerOptions();
             configuration.Bind(SwaggerOptions.Name, swaggerOptions);
 
-            var azureadOptions = new AzureADOptions();
-            configuration.Bind(AzureADOptions.Name, azureadOptions);
-
-            var auth0Options = new Auth0Options();
-            configuration.Bind(Auth0Options.Name, auth0Options);
-
             app.UseSwagger();
-            app.UseSwaggerUI(c =>
+            app.UseSwaggerUI(swaggerUIOptions =>
             {
-                c.SwaggerEndpoint("/swagger/v1/swagger.json", "WeatherForecast v1");
-                c.OAuthClientId(swaggerOptions.ClientID);
-                c.OAuthAppName("Swagger UI - My API");
-                c.OAuthScopeSeparator(" ");
-                c.OAuth2RedirectUrl(swaggerOptions.RedirectUrl);
-                // Refactor this
-                if (auth0Options.Enable && auth0Options.Audience != null)
-                    c.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "audience", auth0Options.Audience } };
-                else if (azureadOptions.Enable)
-                {
-                    c.OAuthRealm(azureadOptions.ClientID);
-                    if (azureadOptions.ClientID != null)
-                        c.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "resource", azureadOptions.ClientID } };
-                }
+                swaggerUIOptions.SwaggerEndpoint("/swagger/v1/swagger.json", "WeatherForecast v1");
+                swaggerUIOptions.OAuthClientId(swaggerOptions.ClientID);
+                swaggerUIOptions.OAuthAppName("Swagger UI - My API");
+                swaggerUIOptions.OAuthScopeSeparator(" ");
+                swaggerUIOptions.OAuth2RedirectUrl(swaggerOptions.RedirectUrl);
+
+                swaggerConfigurator.ConfigureSwaggerUIOptions(swaggerUIOptions);
             });
         }
     }

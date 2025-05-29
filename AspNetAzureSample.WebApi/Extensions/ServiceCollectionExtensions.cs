@@ -35,23 +35,22 @@ namespace AspNetAzureSample.Extensions
             return storageOptions;
         }
 
-        public static void ConfigureAuthentication(this IServiceCollection services, ConfigurationManager configuration)
+        public static void ConfigureAuthentication(this IServiceCollection services,
+                                                   ConfigurationManager configuration,
+                                                   ISwaggerConfigurator swaggerConfigurator)
         {
+            var azureAdOptions = new AzureADOptions();
+            configuration.Bind(AzureADOptions.Name, azureAdOptions);
+
+            var auth0Options = new Auth0Options();
+            configuration.Bind(Auth0Options.Name, auth0Options);
+
             var loggerFactory = LoggerFactory.Create(builder =>
             {
                 builder.AddDebug();
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Information);
             });
-
-            var azureadOptions = new AzureADOptions();
-            configuration.Bind(AzureADOptions.Name, azureadOptions);
-
-            var googleOptions = new GoogleOptions();
-            configuration.Bind(GoogleOptions.Name, googleOptions);
-
-            var auth0Options = new Auth0Options();
-            configuration.Bind(Auth0Options.Name, auth0Options);
 
             var authenticationBuilder = services
                 .AddAuthentication(options =>
@@ -74,55 +73,26 @@ namespace AspNetAzureSample.Extensions
 
             services.AddAuthorization(opts =>
             {
-                if (azureadOptions.RoleName != null)
-                    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureadOptions.RoleName));
+                if (azureAdOptions.RoleName != null)
+                    opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureAdOptions.RoleName));
 
                 opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("permissions", auth0Options.CycleManagementPermission));
             });
 
             services.AddEndpointsApiExplorer();
-            services.AddSwaggerGen(c =>
+            services.AddSwaggerGen(swaggerGenOptions =>
             {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherForecast", Version = "v1" });
-
-                if (auth0Options.Enable)
+                swaggerGenOptions.SwaggerDoc("v1", new OpenApiInfo { Title = "WeatherForecast", Version = "v1" });
+                swaggerGenOptions.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
                 {
-                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
+                    Type = SecuritySchemeType.OAuth2,
+                    Flows = new OpenApiOAuthFlows
                     {
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows
-                        {
-                            Implicit = new OpenApiOAuthFlow
-                            {
-                                AuthorizationUrl = new Uri($"{auth0Options.Authority}authorize"),
-                                TokenUrl = new Uri($"{auth0Options.Authority}auth2/token"),
-                                Scopes = new Dictionary<string, string>
-                                {
-                                    { "audience", auth0Options.Audience }
-                                }
-                            }
-                        }
-                    });
-                }
-                else if (azureadOptions.Enable)
-                {
-                    var host = azureadOptions.Instance;
-                    var tenantId = azureadOptions.TenantId;
-                    c.AddSecurityDefinition("oauth2", new OpenApiSecurityScheme
-                    {
-                        Type = SecuritySchemeType.OAuth2,
-                        Flows = new OpenApiOAuthFlows()
-                        {
-                            Implicit = new OpenApiOAuthFlow()
-                            {
-                                AuthorizationUrl = new Uri($"{host}/{tenantId}/oauth2/authorize"),
-                                TokenUrl = new Uri($"{host}/{tenantId}/oauth2/v2.0/token")
-                            }
-                        }
-                    });
-                }
+                        Implicit = swaggerConfigurator.BuildImplicitFlow()
+                    }
+                });
 
-                c.AddSecurityRequirement(new OpenApiSecurityRequirement()
+                swaggerGenOptions.AddSecurityRequirement(new OpenApiSecurityRequirement()
                     {
                         {
                             new OpenApiSecurityScheme {
@@ -131,7 +101,7 @@ namespace AspNetAzureSample.Extensions
                                     Id = "oauth2"
                                 },
                             },
-                            new List <string> { auth0Options.Audience }
+                            ["openid", "profile", "email"]
                         }
                     });
             });
