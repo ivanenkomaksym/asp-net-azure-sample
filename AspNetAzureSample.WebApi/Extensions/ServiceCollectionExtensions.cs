@@ -3,10 +3,8 @@ using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Models.Identity;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.Validation;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace AspNetAzureSample.Extensions
@@ -55,105 +53,24 @@ namespace AspNetAzureSample.Extensions
             var auth0Options = new Auth0Options();
             configuration.Bind(Auth0Options.Name, auth0Options);
 
-            if (azureadOptions.Enable && googleOptions.Enable)
-            {
-                services.AddAuthentication(options =>
+            var authenticationBuilder = services
+                .AddAuthentication(options =>
                 {
-                    options.DefaultScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme;
-                    options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme;
+                    options.DefaultScheme = MultiSchemeAuthenticationExtensions.MultiAuthenticationScheme;
+                    options.DefaultChallengeScheme = MultiSchemeAuthenticationExtensions.MultiAuthenticationScheme;
                 })
-                    .AddCookie()
-                    .AddJwtBearer(MultiSchemeAuthenticationExtensions.GoogleScheme, options =>
-                    {
-                        options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
-                        options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-                    })
-                    .AddJwtBearer(MultiSchemeAuthenticationExtensions.Auth0Scheme, options =>
-                    {
-                        options.Authority = auth0Options.Authority;
-                        options.Audience = auth0Options.Audience;
-                    })
-                    .AddPolicyScheme(MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
-                                     MultiSchemeAuthenticationExtensions.AzureOrGoogleOrAuth0AuthScheme,
-                                     options =>
-                                     {
-                                         options.SelectDefaultSchemeForCurrentRequest();
-                                     })
-                    .AddMicrosoftIdentityWebApi(jwtOptions =>
-                    {
-                        configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
-                        jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
-                                                                                SecurityToken securityToken,
-                                                                                TokenValidationParameters validationParameters) =>
-                        {
-                            return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
-                        };
-                        jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-                    },
-                    msIdentityOptions =>
-                    {
-                        configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
-                    });
+                .AddCookie()
+                .AddPolicyScheme(MultiSchemeAuthenticationExtensions.MultiAuthenticationScheme,
+                                 MultiSchemeAuthenticationExtensions.MultiAuthenticationScheme,
+                                 options =>
+                                 {
+                                     options.SelectDefaultSchemeForCurrentRequest();
+                                 });
+            var logger = loggerFactory.CreateLogger<CustomJwtBearerEvents>();
 
-                // Authorization
-                services.AddAuthorization(options =>
-                {
-                    // #TODO: Doesn't seem to be really needed
-                    //var defaultAuthorizationPolicyBuilder = new AuthorizationPolicyBuilder(
-                    //    JwtBearerDefaults.AuthenticationScheme,
-                    //    "Google",
-                    //    "Identity.BearerAndApplication");
-                    //defaultAuthorizationPolicyBuilder =
-                    //    defaultAuthorizationPolicyBuilder.RequireAuthenticatedUser();
-                    //options.DefaultPolicy = defaultAuthorizationPolicyBuilder.Build();
-                });
-            }
-            else if (azureadOptions.Enable)
-            {
-                services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-                        .AddMicrosoftIdentityWebApi(jwtOptions =>
-                        {
-                            configuration.GetSection(AzureADOptions.Name).Bind(jwtOptions);
-                            jwtOptions.TokenValidationParameters.IssuerValidator = (string issuer,
-                                                                                    SecurityToken securityToken,
-                                                                                    TokenValidationParameters validationParameters) =>
-                            {
-                                return CustomIssuerValidator.ValidateSpecificIssuers(issuer, securityToken, validationParameters, azureadOptions.AcceptedTenantIds);
-                            };
-                            jwtOptions.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-                        },
-                        msIdentityOptions =>
-                        {
-                            configuration.GetSection(AzureADOptions.Name).Bind(msIdentityOptions);
-                        });
-            }
-            else if (googleOptions.Enable)
-            {
-                // Works - cookie-based authn
-                //services.AddAuthentication(options =>
-                //{
-                //    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-                //    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-                //}).AddCookie()
-                //.AddGoogle(options =>
-                //{
-                //    options.ClientId = configuration["Google:ClientId"] ?? string.Empty;
-                //    options.ClientSecret = configuration["Google:ClientSecret"] ?? string.Empty;
-                //});
-                //services.AddSingleton<IUserProvider, DefaultUserProvider>();
-
-                services.AddAuthentication(options =>
-                {
-                    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-                    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-
-                }).AddJwtBearer(options =>
-                {
-                    options.UseGoogle(clientId: googleOptions.ClientId ?? string.Empty);
-                    options.Events = new CustomJwtBearerEvents(loggerFactory.CreateLogger<CustomJwtBearerEvents>());
-                });
-            }
+            AzureAuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
+            GoogleAuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
+            Auth0AuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
 
             services.AddAuthorization(opts =>
             {

@@ -7,7 +7,7 @@ namespace AspNetAzureSample.Authentication
     public static class MultiSchemeAuthenticationExtensions
     {
         public static readonly string GoogleScheme = "Google";
-        public static readonly string AzureOrGoogleOrAuth0AuthScheme = "Azure_OR_Google_OR_Auth0_OR_Cookie";
+        public static readonly string MultiAuthenticationScheme = "MultiAuthenticationScheme";
         public static readonly string Auth0Scheme = "Auth0";
 
         /// <summary>
