@@ -33,7 +33,9 @@ namespace AspNetAzureSample.Validation
             if (issuerValue == null)
                 return base.TokenValidated(context);
 
-            Logger.TokenValidationSucceeded(principal.GetObjectIdentifierValue(), issuerValue, principal.GetScopeValue(), principal.GetRoleValue(), principal.GetRolesValue());
+            var userName = context.HttpContext.User.Identity?.Name;
+
+            Logger.TokenValidationSucceeded(userName, issuerValue, principal.GetScopeValue(), principal.GetRoleValue(), principal.GetRolesValue());
             return base.TokenValidated(context);
         }
     }

@@ -21,6 +21,7 @@ namespace AspNetAzureSample.Authentication
                 options.Authority = auth0Options.Authority;
                 options.Audience = auth0Options.Audience;
                 options.Events = new CustomJwtBearerEvents(logger);
+                options.TokenValidationParameters.NameClaimType = auth0Options.NameClaimType;
             });
         }
     }
