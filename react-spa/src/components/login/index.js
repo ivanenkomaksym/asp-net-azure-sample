@@ -62,7 +62,7 @@ function Login() {
                 });
             console.log("Auth0 token:", token);
             // You can dispatch an action here if needed
-            dispatch(signinAuth0(user, navigate));
+            dispatch(signinAuth0(user, token, navigate));
         }).catch((error) => {
             console.error("Auth0 login failed:", error);
             // Handle error appropriately

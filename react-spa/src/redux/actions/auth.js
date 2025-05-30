@@ -129,7 +129,7 @@ export const signinMicrosoft = (response, navigate) => async (dispatch)=>{
     }
 }
 
-export const signinAuth0 = (auth0user, navigate) => async (dispatch)=>{
+export const signinAuth0 = (auth0user, id_token, navigate) => async (dispatch)=>{
     console.log("auth.signinAuth0");
 
     try{
@@ -138,7 +138,7 @@ export const signinAuth0 = (auth0user, navigate) => async (dispatch)=>{
                               /*email           */auth0user.email,
                               /*picture         */auth0user.picture,
                               /*identityProvider*/AUTH0,
-                              /*id_token        */null,
+                              /*id_token        */id_token,
                               /*refresh_token   */null,
                               /*organization    */null);
 

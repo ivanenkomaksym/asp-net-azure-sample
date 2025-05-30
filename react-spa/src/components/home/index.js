@@ -7,7 +7,7 @@ import HomeStyles from "./Home.module.css"
 
 import { PublicClientApplication, InteractionRequiredAuthError } from '@azure/msal-browser';
 import { weatherForecastTokenRequest, msalConfig, signInToOrganizations } from '../../authConfig';
-import { MICROSOFT_IP, GOOGLE_IP, ORGANIZATION } from '../../redux/const/actionsTypes';
+import { MICROSOFT_IP, GOOGLE_IP, ORGANIZATION, AUTH0 } from '../../redux/const/actionsTypes';
 
 function Home() {
     const [userData, setUserData] = useState(null);
@@ -85,7 +85,8 @@ function Home() {
                     setError(error.message);
                 });
         } else if (userData.identityProvider == GOOGLE_IP ||
-                   userData.identityProvider == ORGANIZATION) {
+                   userData.identityProvider == ORGANIZATION ||
+                   userData.identityProvider == AUTH0) {
             api.weatherForecast(userData.id_token).then((result) => {
                 console.log("data: ", JSON.stringify(result, null, 2));
                 setWeatherData(result);
