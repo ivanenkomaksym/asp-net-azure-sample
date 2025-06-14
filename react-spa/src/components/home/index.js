@@ -133,9 +133,11 @@ function Home() {
             {checkTokenValidity() ? (
                 <>
                     {userData && (
-                        <button onClick={handleGetWeather} className={HomeStyles.getWeatherButton}>
-                            Get Weather
-                        </button>
+                        <div className={HomeStyles.buttonContainer}>
+                            <button onClick={handleGetWeather} className={HomeStyles.getWeatherButton}>
+                                Get Weather
+                            </button>
+                        </div>
                     )}
                     {userData && weatherData && (
                         <div className={HomeStyles.weatherData}>

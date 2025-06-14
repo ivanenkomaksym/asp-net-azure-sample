@@ -130,7 +130,7 @@ function Signup() {
                 <button onClick={handleOnSubmit} className={SignUp.loginBTN}>REGISTER</button>
                  <span className={SignUp.or}>or</span>
                  <button  onClick={() => login()}  className={SignUp.googleBTN}>
-                    <i class="fa-brands fa-google"></i>  Sign up with google</button>
+                    <i className="fa-brands fa-google"></i>  Sign up with google</button>
 
                  
             </div>

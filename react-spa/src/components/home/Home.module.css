@@ -4,6 +4,12 @@
     margin: auto;
     font-family: Arial, sans-serif;
   }
+
+  .buttonContainer {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
   
   .getWeatherButton {
     padding: 10px 20px;
