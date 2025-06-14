@@ -133,8 +133,8 @@ export const signinAuth0 = (auth0user, id_token, navigate) => async (dispatch)=>
     console.log("auth.signinAuth0");
 
     try{
-        const user = new User(/*firstName       */auth0user.givenName,
-                              /*lastName        */auth0user.familyName,
+        const user = new User(/*firstName       */auth0user.given_name || auth0user.name?.split(' ')[0] || '',
+                              /*lastName        */auth0user.family_name || auth0user.name?.split(' ').slice(1).join(' ') || '',
                               /*email           */auth0user.email,
                               /*picture         */auth0user.picture,
                               /*identityProvider*/AUTH0,

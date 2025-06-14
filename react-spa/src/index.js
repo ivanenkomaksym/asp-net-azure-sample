@@ -37,6 +37,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
                       domain={auth0Config.domain}
                       clientId={auth0Config.clientId}    
                       authorizationParams={{
+                        // Make sure to include audience to get JWT token instead of opaque token
+                        audience: auth0Config.audience,
                         org_id: auth0Config.organization,
                         redirect_uri: `${window.location.origin}/auth0-callback`
                       }}>

@@ -31,8 +31,7 @@ function Auth0Callback() {
       // Get the access token
       getAccessTokenSilently({
         authorizationParams: {
-          audience: auth0Config.audience,
-          organization: auth0Config.organization
+          audience: auth0Config.audience
         }
       })
       .then(token => {
