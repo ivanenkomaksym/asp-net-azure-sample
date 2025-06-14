@@ -8,6 +8,7 @@ import User from "../../models/user"
 
 import { jwtDecode } from 'jwt-decode';
 import { loadUserFromLocalStorage } from "../reducers/auth";
+import { LOGOUT } from "../../redux/const/actionsTypes"
 
 export const loadUser = () => async (dispath)=>{
     console.log("auth.loadUser");
@@ -201,5 +202,16 @@ export const signupGoogle = (accessToken, navigate) => async (dispatch)=>{
         navigate("/")
     }catch(err){
         console.log(err);
+    }
+}
+
+export const logout = () => async (dispatch) => {
+    console.log("auth.logout");
+    
+    try {
+        // Dispatch the LOGOUT action to clear Redux state and localStorage
+        dispatch({ type: LOGOUT });
+    } catch (err) {
+        console.log("Logout error:", err);
     }
 }

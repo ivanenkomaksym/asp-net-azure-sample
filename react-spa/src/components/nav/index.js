@@ -3,16 +3,18 @@ import {Link} from "react-router-dom"
 import {connect} from "react-redux"
 import {useEffect, useState} from "react";
 import {useDispatch} from "react-redux"
-import {LOGOUT} from "../../redux/const/actionsTypes"
 import { useLocation } from 'react-router-dom'
 import { useNavigate  } from 'react-router-dom';
 import NavStyles from "./Nav.module.css"
+import Logout from "../logout/index"
+import { logout } from "../../redux/actions/auth";
 
 function Nav(props) {
     const dispatch = useDispatch();
     const [userData, setUserData] = useState(null);
     const location = useLocation();
-    const navigate = useNavigate (); // Get the history object
+    const navigate = useNavigate();
+    const { logoutUser } = Logout();
 
     useEffect(() => {
         const localUser = JSON.parse(localStorage.getItem("user_info"));
@@ -25,8 +27,15 @@ function Nav(props) {
 
     function handleLogOut(e) {
         e.preventDefault();
-        dispatch({ type: LOGOUT });
-        navigate('/'); // Navigate to the home page after logging out
+        
+        // First, handle provider-specific logout (Auth0, Microsoft, etc.)
+        logoutUser();
+        
+        // Then dispatch the Redux logout action to clear state
+        dispatch(logout());
+        
+        // Navigate to home page
+        navigate('/');
     }
 
     return (
