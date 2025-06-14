@@ -42,32 +42,15 @@ function Login() {
     }
 
     // Auth0 login
-    const { user, loginWithPopup, getAccessTokenWithPopup } = useAuth0();
+    const { loginWithRedirect } = useAuth0();
 
-    const Auth0Login = async () => {
-        loginWithPopup({
+    const Auth0Login = () => {
+        loginWithRedirect({
             authorizationParams: {
-            org_id: auth0Config.organization
+                organization: auth0Config.organization
             }
-        }).then(async (response) => {
-            console.log("Auth0 login successful:", response);
-            console.log("auth0 user:", user);
-            console.log("auth0 audience:", auth0Config.audience);
-
-            const token = await getAccessTokenWithPopup({ 
-                    authorizationParams: { 
-                        audience: auth0Config.audience,
-                        organization: auth0Config.organization
-                    }
-                });
-            console.log("Auth0 token:", token);
-            // You can dispatch an action here if needed
-            dispatch(signinAuth0(user, token, navigate));
-        }).catch((error) => {
-            console.error("Auth0 login failed:", error);
-            // Handle error appropriately
         });
-    }
+    };
 
     const [validationErrors, setValidationErrors] = useState(""); // State to store validation errors
     const errorHandler = (err) => {        

@@ -37,7 +37,8 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
                       domain={auth0Config.domain}
                       clientId={auth0Config.clientId}    
                       authorizationParams={{
-                        redirect_uri: window.location.origin
+                        org_id: auth0Config.organization,
+                        redirect_uri: `${window.location.origin}/auth0-callback`
                       }}>
                         <App />
                     </Auth0Provider>

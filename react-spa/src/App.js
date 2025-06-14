@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'
 
@@ -9,6 +8,7 @@ import Nav from "./components/nav/index"
 import Profile from "./components/profile/index"
 import LoginOrg from "./components/loginorg/index"
 import Callback from './components/callback/index'
+import Auth0Callback from './components/auth0-callback/index'
 import Portal from './components/portal/index'
 
 function App() {
@@ -22,6 +22,7 @@ function App() {
         <Route path="/account/profile" element={<Profile />} />
         <Route path="/account/loginorg" element={<LoginOrg />} />
         <Route path="/callback" element={<Callback />} />
+        <Route path="/auth0-callback" element={<Auth0Callback />} />
         <Route path="/customer_portal" element={<Portal />} />
       </Routes>
     </div>
