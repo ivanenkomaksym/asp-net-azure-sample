@@ -3,6 +3,7 @@ using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Models.Identity;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.Validation;
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -71,6 +72,8 @@ namespace AspNetAzureSample.Extensions
             GoogleAuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
             Auth0AuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
 
+            var shouldEnableOrganizationAccess = auth0Options.OrganizationId != null;
+
             services.AddAuthorization(opts =>
             {
                 if (azureAdOptions.RoleName != null)
@@ -78,7 +81,13 @@ namespace AspNetAzureSample.Extensions
 
                 if (auth0Options.MaintenanceScopes != null)
                     opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("scope", auth0Options.MaintenanceScopes));
+
+                if (shouldEnableOrganizationAccess)
+                    opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p => p.RequireClaim("org_id", auth0Options.OrganizationId));
             });
+
+            if (shouldEnableOrganizationAccess)
+                services.AddMvc(options => options.Filters.Add(new AuthorizeFilter(AuthorizationPolicies.OrganizationAccessPolicy)));
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(swaggerGenOptions =>

@@ -18,7 +18,14 @@ namespace AspNetAzureSample.Authentication
 
         public void ConfigureSwaggerUIOptions(SwaggerUIOptions swaggerUIOptions)
         {
-            swaggerUIOptions.OAuthConfigObject.AdditionalQueryStringParams = new Dictionary<string, string> { { "audience", Auth0Options.Audience } };
+            var additionalQueryStringParams = new Dictionary<string, string> {
+                { "audience", Auth0Options.Audience }
+            };
+
+            if (!string.IsNullOrWhiteSpace(Auth0Options.OrganizationId))
+                additionalQueryStringParams.Add("organization", Auth0Options.OrganizationId);
+
+            swaggerUIOptions.OAuthConfigObject.AdditionalQueryStringParams = additionalQueryStringParams;
         }
 
         private readonly Auth0Options Auth0Options = auth0Options.Value ?? throw new ArgumentNullException(nameof(auth0Options));

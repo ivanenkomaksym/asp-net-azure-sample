@@ -9,5 +9,6 @@
         public string Audience { get; set; } = string.Empty;
         public string MaintenanceScopes { get; set; } = string.Empty;
         public string NameClaimType { get; set; } = string.Empty;
+        public string OrganizationId { get; set; } = string.Empty;
     }
 }
