@@ -64,13 +64,31 @@ openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com
 curl -d "client_id=YOUR_APP_CLIENT_ID&client_secret=YOUR_APP_CLIENT_SECRET&grant_type=refresh_token&refresh_token=YOUR_APP_REFRESH_TOKEN" "https://oauth2.googleapis.com/token"
 ```
 
+## Auth0
+
+1. Configure Auth0
+2. Add this section to `appsettings.json`
+```json
+    "Auth0": {
+        "Enable": true,
+        "Authority": "[auth0 authority]",
+        "Audience": "[auth0 audience]",
+        "ClientId": "[auth0 client id]",
+        "MaintenanceScopes": "[scopes to protect maintenance endpoint accessed by M2M]",
+        "NameClaimType": "[controls the value of name claim]"
+    },
+```
+
 ## How to use this sample
 
 ### Swagger UI
 1. Open http://localhost:5000/swagger/index.html
 2. Click **Authorize** using accounts from different tenants.
 
-### Access from daemon client application without real user
+## Access from daemon client application without real user
+
+### Entra
+
 1. In **Postman** get an access token as described in [Get an access token](https://learn.microsoft.com/en-us/graph/auth-v2-service#4-get-an-access-token)
    - POST https://login.microsoftonline.com/{tenant}/oauth2/v2.0/token
    - client_id={daemon app client id from step 4}
@@ -78,6 +96,17 @@ curl -d "client_id=YOUR_APP_CLIENT_ID&client_secret=YOUR_APP_CLIENT_SECRET&grant
    - client_secret={daemon app client secret from step 4}
    - grant_type=client_credentials
 2. Using generated token access https://localhost:5000/Maintenance
+
+### Auth0
+
+1. In **Postman** get an access token
+   - POST https://{auth0_authority}/oauth2/token
+   - client_id={m2m client id}
+   - client_secret={m2m client secret}
+   - grant_type=client_credentials
+   - audience={auth0 API}
+   - organization={auth0 organization id}
+2. Using generated token access https://localhost:5000/InitializeCycle
 
 ### React Single Page Application
 
