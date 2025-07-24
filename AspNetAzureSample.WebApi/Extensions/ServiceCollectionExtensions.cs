@@ -76,7 +76,8 @@ namespace AspNetAzureSample.Extensions
                 if (azureAdOptions.RoleName != null)
                     opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureAdOptions.RoleName));
 
-                opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("permissions", auth0Options.CycleManagementPermission));
+                if (auth0Options.MaintenanceScopes != null)
+                    opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("scope", auth0Options.MaintenanceScopes));
             });
 
             services.AddEndpointsApiExplorer();

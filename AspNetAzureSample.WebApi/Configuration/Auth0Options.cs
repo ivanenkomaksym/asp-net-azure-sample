@@ -7,7 +7,7 @@
         public bool Enable { get; set; }
         public string Authority { get; set; } = string.Empty;
         public string Audience { get; set; } = string.Empty;
-        public string CycleManagementPermission { get; set; } = string.Empty;
+        public string MaintenanceScopes { get; set; } = string.Empty;
         public string NameClaimType { get; set; } = string.Empty;
     }
 }
