@@ -3,6 +3,7 @@ using AspNetAzureSample.Authorization;
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Extensions;
 using AspNetAzureSample.Models.Identity;
+using AspNetAzureSample.Security;
 using AspNetAzureSample.UserProviders;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -39,7 +40,7 @@ services.AddIdentityApiEndpoints<IdentityUser>(opt =>
 
 builder.Services.AddAuthorization(options =>
 {
-    options.AddPolicy("HealthCheckPolicy", policy =>
+    options.AddPolicy(AuthorizationPolicies.MinimumAgePolicy, policy =>
     {
         policy.RequireAuthenticatedUser();
         policy.AddRequirements(new MinimumAgeRequirement("age", 18));
@@ -114,7 +115,7 @@ app.MapRazorPages();
 app.ConfigureSwagger(configuration, swaggerConfigurator);
 
 app.MapControllers();
-app.MapHealthChecks("/healthz").RequireAuthorization("HealthCheckPolicy");
+app.MapHealthChecks("/healthz").RequireAuthorization(AuthorizationPolicies.MinimumAgePolicy);
 
 app.MigrateDatabase(configuration);
 

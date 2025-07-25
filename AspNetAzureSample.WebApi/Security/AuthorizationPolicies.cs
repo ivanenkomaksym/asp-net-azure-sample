@@ -5,5 +5,6 @@
         public const string ApplicationAccessPolicy = "ApplicationAccessPolicy";
         public const string CycleManagementPolicy = "CycleManagementPolicy";
         public const string OrganizationAccessPolicy = "OrganizationAccessPolicy";
+        public const string MinimumAgePolicy = "MinimumAgePolicy";
     }
 }
