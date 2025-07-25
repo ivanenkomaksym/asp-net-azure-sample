@@ -5,8 +5,6 @@ namespace AspNetAzureSample.Authorization
 {
     public class MinimumAgeAuthorizationResultTransformer : IAuthorizationMiddlewareResultHandler
     {
-        private readonly AuthorizationMiddlewareResultHandler _defaultHandler = new AuthorizationMiddlewareResultHandler();
-
         public async Task HandleAsync(RequestDelegate next,
                                       HttpContext context,
                                       AuthorizationPolicy policy,
@@ -24,8 +22,6 @@ namespace AspNetAzureSample.Authorization
                     return;
                 }
             }
-
-            await _defaultHandler.HandleAsync(next, context, policy, authorizeResult);
         }
     }
 }

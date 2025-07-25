@@ -8,30 +8,36 @@ namespace AspNetAzureSample.Authorization
         {
             var httpContext = (context.Resource as HttpContext);
 
-            if (httpContext != null && httpContext.Request.Headers.TryGetValue(requirement.HeaderName, out var headerValue))
+            if (httpContext != null)
             {
-                var result = ushort.TryParse(headerValue, out var age);
-                if (!result)
+                if (httpContext.Request.Headers.TryGetValue(requirement.HeaderName, out var headerValue))
                 {
-                    var missingAgeReason = new MinimumAgeFailureReason(this, "Incorrect age format.");
-                    context.Fail(missingAgeReason);
+                    var result = ushort.TryParse(headerValue, out var age);
+                    if (!result)
+                    {
+                        var missingAgeReason = new MinimumAgeFailureReason(this, "Incorrect age format.");
+                        context.Fail(missingAgeReason);
+                        return Task.CompletedTask;
+                    }
+
+                    if (age < requirement.MinimumAge)
+                    {
+                        var missingAgeReason = new MinimumAgeFailureReason(this, "Underage.");
+                        context.Fail(missingAgeReason);
+                        return Task.CompletedTask;
+                    }
+
+                    context.Succeed(requirement); // Authorization succeeds
                     return Task.CompletedTask;
                 }
 
-                if (age < requirement.MinimumAge)
-                {
-                    var missingAgeReason = new MinimumAgeFailureReason(this, "Underage.");
-                    context.Fail(missingAgeReason);
-                    return Task.CompletedTask;
-                }
-                 
-                context.Succeed(requirement); // Authorization succeeds
+                // Fail if header is missing or value is incorrect
+                var underageReason = new MinimumAgeFailureReason(this, "Missing age.");
+                context.Fail(underageReason);
                 return Task.CompletedTask;
             }
 
-            // Fail if header is missing or value is incorrect
-            var underageReason = new MinimumAgeFailureReason(this, "Missing age.");
-            context.Fail(underageReason);
+            context.Succeed(requirement); // Authorization succeeds
             return Task.CompletedTask;
         }
     }

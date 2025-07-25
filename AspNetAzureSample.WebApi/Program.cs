@@ -48,7 +48,9 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddTransient<IAuthorizationHandler, MinimumAgeHandler>();
-builder.Services.AddSingleton<IAuthorizationMiddlewareResultHandler, MinimumAgeAuthorizationResultTransformer>();
+
+builder.Services.AddCompositeAuthorizationResultTransformer(typeof(MinimumAgeAuthorizationResultTransformer),
+                                                            typeof(UnsupportedOrganizationAuthorizationResultTransformer));
 
 services.AddTransient<IdentityDataSeeder>();
 services.AddHostedService<SetupIdentityDataSeeder>();
@@ -86,6 +88,8 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
+app.ConfigureAppAuthentication(configuration);
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

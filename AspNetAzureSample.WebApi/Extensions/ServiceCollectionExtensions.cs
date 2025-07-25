@@ -1,9 +1,9 @@
 ﻿using AspNetAzureSample.Authentication;
+using AspNetAzureSample.Authorization;
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Models.Identity;
 using AspNetAzureSample.Security;
 using AspNetAzureSample.Validation;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Identity.Web;
 using Microsoft.OpenApi.Models;
@@ -80,14 +80,11 @@ namespace AspNetAzureSample.Extensions
                     opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureAdOptions.RoleName));
 
                 if (auth0Options.MaintenanceScopes != null)
-                    opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("scope", auth0Options.MaintenanceScopes));
+                    opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim(Claims.ScopeClaimType, auth0Options.MaintenanceScopes));
 
                 if (shouldEnableOrganizationAccess)
-                    opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p => p.RequireClaim("org_id", auth0Options.OrganizationId));
+                    opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p => p.RequireClaim(Claims.OrganizationIdClaimType, auth0Options.OrganizationId));
             });
-
-            if (shouldEnableOrganizationAccess)
-                services.AddMvc(options => options.Filters.Add(new AuthorizeFilter(AuthorizationPolicies.OrganizationAccessPolicy)));
 
             services.AddEndpointsApiExplorer();
             services.AddSwaggerGen(swaggerGenOptions =>
@@ -115,6 +112,19 @@ namespace AspNetAzureSample.Extensions
                         }
                     });
             });
+        }
+
+        public static void ConfigureAppAuthentication(this WebApplication app,
+                                                      ConfigurationManager configuration)
+        {
+            var auth0Options = new Auth0Options();
+            configuration.Bind(Auth0Options.Name, auth0Options);
+
+            // Use endpoint routing rather than the MVC filter system:
+            // services.AddMvc(options => options.Filters.Add(new AuthorizeFilter(AuthorizationPolicies.OrganizationAccessPolicy)));
+            // This way, the ASP.NET Core authorization middleware will run and IAuthorizationMiddlewareResultHandler will be called
+            if (auth0Options.OrganizationId != null)
+                app.MapControllers().RequireAuthorization(AuthorizationPolicies.OrganizationAccessPolicy);
         }
     }
 }
