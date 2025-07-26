@@ -72,7 +72,7 @@ namespace AspNetAzureSample.Extensions
             GoogleAuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
             Auth0AuthenticationExtensions.ConfigureAuthentication(authenticationBuilder, configuration, logger);
 
-            var shouldEnableOrganizationAccess = auth0Options.OrganizationId != null;
+            var shouldEnableOrganizationAccess = !string.IsNullOrEmpty(auth0Options.OrganizationId);
 
             services.AddAuthorization(opts =>
             {
@@ -123,7 +123,7 @@ namespace AspNetAzureSample.Extensions
             // Use endpoint routing rather than the MVC filter system:
             // services.AddMvc(options => options.Filters.Add(new AuthorizeFilter(AuthorizationPolicies.OrganizationAccessPolicy)));
             // This way, the ASP.NET Core authorization middleware will run and IAuthorizationMiddlewareResultHandler will be called
-            if (auth0Options.OrganizationId != null)
+            if (!string.IsNullOrEmpty(auth0Options.OrganizationId))
                 app.MapControllers().RequireAuthorization(AuthorizationPolicies.OrganizationAccessPolicy);
         }
     }
