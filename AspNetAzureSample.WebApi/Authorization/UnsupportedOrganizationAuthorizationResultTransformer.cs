@@ -24,36 +24,34 @@ namespace AspNetAzureSample.Authorization
                                       AuthorizationPolicy policy,
                                       PolicyAuthorizationResult authorizeResult)
         {
-            if (!authorizeResult.Succeeded)
+            if (authorizeResult.Succeeded)
+                return;
+
+            var auth0Options = new Auth0Options();
+            Configuration.Bind(Auth0Options.Name, auth0Options);
+
+            bool failedByAssertion = authorizeResult.AuthorizationFailure?.FailedRequirements
+                                                      .Any(r => r is AssertionRequirement) ?? false;
+
+            if (!failedByAssertion)
+                return;
+
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            context.Response.ContentType = "application/json";
+
+            var responsePayload = new
             {
-                var auth0Options = new Auth0Options();
-                Configuration.Bind(Auth0Options.Name, auth0Options);
+                error = "AuthorizationFailed",
+                message = $"Access denied. You are not part of the organization",
+                details = authorizeResult.AuthorizationFailure?.FailedRequirements
+                            .Select(r => $"Requirement Failed: {r.GetType().Name}")
+                            .ToList()
+            };
 
-                var claimsRequirementFailed = authorizeResult.AuthorizationFailure?.FailedRequirements
-                                             .OfType<ClaimsAuthorizationRequirement>()
-                                             .Any(r => r.ClaimType == Claims.OrganizationIdClaimType)
-                                             ?? false;
+            Logger.LogWarning($"Authorization failed for policy '{AuthorizationPolicies.OrganizationAccessPolicy}'. User is not part of the '{auth0Options.OrganizationId}'. Returning custom 403 response.");
 
-                if (claimsRequirementFailed)
-                {
-                    context.Response.StatusCode = StatusCodes.Status403Forbidden;
-                    context.Response.ContentType = "application/json";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(responsePayload));
 
-                    var responsePayload = new
-                    {
-                        error = "AuthorizationFailed",
-                        message = $"Access denied. You are not part of the organization",
-                        details = authorizeResult.AuthorizationFailure?.FailedRequirements
-                                    .Select(r => $"Requirement Failed: {r.GetType().Name}")
-                                    .ToList()
-                    };
-
-                    Logger.LogWarning($"Authorization failed for policy '{AuthorizationPolicies.OrganizationAccessPolicy}'. User is not part of the '{auth0Options.OrganizationId}'. Returning custom 403 response.");
-
-                    await context.Response.WriteAsync(JsonSerializer.Serialize(responsePayload));
-                    return;
-                }
-            }
         }
     }
 }

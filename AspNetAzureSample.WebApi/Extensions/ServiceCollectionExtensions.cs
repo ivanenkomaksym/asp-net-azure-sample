@@ -83,7 +83,22 @@ namespace AspNetAzureSample.Extensions
                     opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim(Claims.ScopeClaimType, auth0Options.MaintenanceScopes));
 
                 if (shouldEnableOrganizationAccess)
-                    opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p => p.RequireClaim(Claims.OrganizationIdClaimType, auth0Options.OrganizationId));
+                    opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p =>
+                    {
+                        p.RequireAssertion(context =>
+                        {
+                            var auth0Claim = context.User.Claims.FirstOrDefault(c => c.Issuer.Contains("auth0.com"), null);
+                            var notAuth0Authentication = auth0Claim == null;
+                            if (notAuth0Authentication)
+                                return true;
+
+                            var organizationClaim = context.User.Claims.FirstOrDefault(c => c.Type == Claims.OrganizationIdClaimType, null);
+                            if (organizationClaim == null)
+                                return false;
+
+                            return organizationClaim.Value == auth0Options.OrganizationId;
+                        });
+                    });
             });
 
             services.AddEndpointsApiExplorer();
