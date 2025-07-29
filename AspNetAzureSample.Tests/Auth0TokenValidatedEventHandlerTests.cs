@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using NSubstitute;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace AspNetAzureSample.Tests;
 
@@ -90,6 +92,32 @@ public class Auth0TokenValidatedEventHandlerTests
         return options.Events.OnTokenValidated;
     }
 
+    private Func<JwtBearerChallengeContext, Task> GetOnChallengeDelegate()
+    {
+        var options = new JwtBearerOptions
+        {
+            // This part mimics your Program.cs setup of options.Events.OnChallenge
+            Events = new JwtBearerEvents
+            {
+                OnChallenge = context =>
+                {
+                    if (context.AuthenticateFailure != null)
+                    {
+                        context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+                        context.Response.ContentType = "application/json";
+                        var errorResponse = new
+                        {
+                            status = StatusCodes.Status401Unauthorized,
+                            message = context.AuthenticateFailure.Message
+                        };
+                        return context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+                    }
+                    return Task.CompletedTask;
+                }
+            }
+        };
+        return options.Events.OnChallenge;
+    }
 
     [Fact]
     public async Task OnTokenValidated_WithCorrectOrganizationIdClaim_Succeeds()
@@ -226,5 +254,57 @@ public class Auth0TokenValidatedEventHandlerTests
         Assert.NotNull(context.Result);
         Assert.NotNull(context.Result.Failure);
         Assert.Equal(MissingOrganizationMessage, context.Result.Failure.Message);
+    }
+
+    [Fact]
+    public async Task OnChallenge_WhenAuthenticationFails_ReturnsCustomJsonResponse()
+    {
+        // Arrange
+        var mockHttpContext = new DefaultHttpContext();
+        // Setup a MemoryStream for the response body to capture the output
+        var responseBodyStream = new MemoryStream();
+        mockHttpContext.Response.Body = responseBodyStream;
+        mockHttpContext.Response.ContentType = "text/plain"; // Initial content type
+
+        var testFailureMessage = "Token does not contain the required organization ID claim or its value is incorrect. Required: 'some-org-id'";
+        var authenticateFailureException = new Exception(testFailureMessage);
+
+        // Mock the AuthenticationScheme
+        var authScheme = new AuthenticationScheme(
+            MultiSchemeAuthenticationExtensions.Auth0Scheme,
+            MultiSchemeAuthenticationExtensions.Auth0Scheme,
+            typeof(JwtBearerHandler)
+        );
+
+        // Create a ChallengeContext instance. Its constructor is internal, so we need Moq.
+        var mockChallengeContext = Substitute.For<JwtBearerChallengeContext>(
+            mockHttpContext,
+            authScheme,
+            new JwtBearerOptions(),
+            new AuthenticationProperties()
+        );
+
+        // Set up the properties that your OnChallenge handler expects
+        mockChallengeContext.AuthenticateFailure = authenticateFailureException;
+        //mockChallengeContext.Response.Returns(mockHttpContext.Response);
+
+        var onChallenge = GetOnChallengeDelegate();
+
+        // Act
+        await onChallenge(mockChallengeContext);
+
+        // Assert
+        Assert.Equal(StatusCodes.Status401Unauthorized, mockHttpContext.Response.StatusCode);
+        Assert.Equal("application/json", mockHttpContext.Response.ContentType);
+
+        // Read the response body
+        responseBodyStream.Seek(0, SeekOrigin.Begin); // Rewind stream to read from beginning
+        using var reader = new StreamReader(responseBodyStream);
+        var responseBody = await reader.ReadToEndAsync();
+
+        // Deserialize and check the JSON content
+        var jsonResponse = JsonSerializer.Deserialize<JsonElement>(responseBody);
+        Assert.Equal(StatusCodes.Status401Unauthorized, jsonResponse.GetProperty("status").GetInt32());
+        Assert.Equal(testFailureMessage, jsonResponse.GetProperty("message").GetString());
     }
 }
