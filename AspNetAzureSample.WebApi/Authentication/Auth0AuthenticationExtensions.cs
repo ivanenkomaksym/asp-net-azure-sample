@@ -2,8 +2,7 @@
 using AspNetAzureSample.Configuration;
 using AspNetAzureSample.Validation;
 using Microsoft.AspNetCore.Authentication;
-using Microsoft.IdentityModel.JsonWebTokens;
-using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text.Json;
 
 namespace AspNetAzureSample.Authentication
@@ -28,43 +27,49 @@ namespace AspNetAzureSample.Authentication
                 options.TokenValidationParameters.NameClaimType = auth0Options.NameClaimType;
 
                 var requiredOrgId = auth0Options.OrganizationId;
-                options.Events = new Microsoft.AspNetCore.Authentication.JwtBearer.JwtBearerEvents
+                options.Events = new JwtBearerEvents
                 {
                     OnTokenValidated = context =>
                     {
-                        // Find the organization ID claim from the authenticated principal
-                        var organizationIdClaim = context.Principal?.FindFirst(Claims.OrganizationIdClaimType);
-
-                        // If the claim is missing OR its value does not match the required ID,
-                        // then reject the token by failing the authentication context.
-                        if (string.IsNullOrEmpty(requiredOrgId) || organizationIdClaim == null || organizationIdClaim.Value != requiredOrgId)
-                        {
-                            // This will prevent the creation of an authenticated principal for this scheme
-                            context.Fail($"Token does not contain the required organization ID claim or its value is incorrect. Required: '{requiredOrgId}'");
-                        }
-
-                        return Task.CompletedTask;
+                        return ValidateToken(context, requiredOrgId);
                     },
 
-                    OnChallenge = context =>
-                    {
-                        // Customize challenge response for Auth0 if token is invalid or missing
-                        if (context.AuthenticateFailure != null)
-                        {
-                            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-                            context.Response.ContentType = "application/json";
-                            var errorResponse = new
-                            {
-                                status = StatusCodes.Status401Unauthorized,
-                                message = context.AuthenticateFailure.Message // Use the message from context.Fail() above
-                            };
-                            return context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
-                        }
-                        // For other challenges, like no token provided, let default handle.
-                        return Task.CompletedTask;
-                    }
+                    OnChallenge = CustomizeResponse
                 };
             });
         }
+
+        public static Task ValidateToken(TokenValidatedContext context, string organizationId)
+        {
+            var organizationIdClaim = context.Principal?.FindFirst(Claims.OrganizationIdClaimType);
+
+            if (string.IsNullOrEmpty(organizationId) || organizationIdClaim == null)
+            {
+                context.Fail(MissingOrganizationMessage);
+                return Task.CompletedTask;
+            }
+
+            if (organizationIdClaim.Value != organizationId)
+                context.Fail($"Token does not contain the required organization ID claim or its value is incorrect. Required: '{organizationId}'");
+
+            return Task.CompletedTask;
+        }
+
+        public static Task CustomizeResponse(JwtBearerChallengeContext context)
+        {
+            if (context.AuthenticateFailure == null)
+                return Task.CompletedTask;
+
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            context.Response.ContentType = "application/json";
+            var errorResponse = new
+            {
+                status = StatusCodes.Status401Unauthorized,
+                message = context.AuthenticateFailure.Message
+            };
+            return context.Response.WriteAsync(JsonSerializer.Serialize(errorResponse));
+        }
+
+        internal const string MissingOrganizationMessage = "Required organization ID is not set in configuration.";
     }
 }
