@@ -62,7 +62,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.AddTransient<IAuthorizationHandler, MinimumAgeHandler>();
 
 builder.Services.AddCompositeAuthorizationResultTransformer(typeof(MinimumAgeAuthorizationResultTransformer),
-                                                            typeof(UnsupportedOrganizationAuthorizationResultTransformer));
+                                                            typeof(UnsupportedOrganizationAuthorizationResultTransformer),
+                                                            typeof(MaintenanceScopeAuthorizationResultTransformer));
 
 services.AddTransient<IdentityDataSeeder>();
 services.AddHostedService<SetupIdentityDataSeeder>();
