@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration.Memory;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Options;
@@ -14,19 +14,19 @@ namespace AspNetAzureSample.Tests;
 
 public class CustomWebApplicationFactory : WebApplicationFactory<Program>
 {
+    public const string MaintenanceScope = "maintenance";
+
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
+        var testConfigurationBuilder = new ConfigurationBuilder().AddInMemoryCollection(
+        [
+            KeyValuePair.Create<string, string?>($"{Auth0Options.Name}:{nameof(Auth0Options.Enable)}", "true"),
+            KeyValuePair.Create<string, string?>($"{Auth0Options.Name}:{nameof(Auth0Options.MaintenanceScopes)}", MaintenanceScope)
+        ])
+        .Build();
+
+        builder.UseConfiguration(testConfigurationBuilder);
         builder.UseEnvironment(EnvironmentConfiguration.Testing);
-
-        builder.ConfigureAppConfiguration(configurationBuilder =>
-        {
-            configurationBuilder.Sources.Clear();
-
-            var configuration = new[] { KeyValuePair.Create<string, string?>($"", "") };
-            var memoryConfiguration = new MemoryConfigurationSource { InitialData = configuration };
-
-            configurationBuilder.Add(memoryConfiguration);
-        });
 
         builder.ConfigureServices(services =>
         {
