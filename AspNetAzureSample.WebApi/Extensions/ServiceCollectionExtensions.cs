@@ -80,7 +80,7 @@ namespace AspNetAzureSample.Extensions
                     opts.AddPolicy(AuthorizationPolicies.ApplicationAccessPolicy, p => p.RequireClaim(ClaimConstants.Role, azureAdOptions.RoleName));
 
                 if (auth0Options.MaintenanceScopes != null)
-                    opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim(Claims.ScopeClaimType, auth0Options.MaintenanceScopes));
+                    opts.AddPolicy(AuthorizationPolicies.CycleManagementPolicy, p => p.RequireClaim("scope", auth0Options.MaintenanceScopes));
 
                 if (shouldEnableOrganizationAccess)
                     opts.AddPolicy(AuthorizationPolicies.OrganizationAccessPolicy, p =>
