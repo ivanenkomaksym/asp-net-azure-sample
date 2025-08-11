@@ -1,5 +1,6 @@
 ﻿using System.Net;
 using System.Security.Claims;
+using System.Text.Json;
 
 namespace AspNetAzureSample.Tests;
 
@@ -17,13 +18,6 @@ public class CycleManagementControllerTests : IClassFixture<CustomWebApplication
         _client = _factory.CreateClient();
     }
 
-    public async Task DisposeAsync()
-    {
-        // Clean up resources if necessary
-        _client.Dispose();
-        await _factory.DisposeAsync();
-    }
-
     [Fact]
     public async Task InitializeCycle_WithoutAnyScope_ReturnsForbidden()
     {
@@ -32,6 +26,15 @@ public class CycleManagementControllerTests : IClassFixture<CustomWebApplication
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        var jsonResponse = JsonDocument.Parse(responseBody);
+        var root = jsonResponse.RootElement;
+
+        Assert.Equal("AuthorizationFailed", root.GetProperty("error").GetString());
+        Assert.Contains("Forbidden. Current user does not have a specified scope", root.GetProperty("message").GetString());
+        Assert.Contains("Requirement Failed", root.GetProperty("details").GetString());
     }
 
     [Fact]
@@ -50,6 +53,15 @@ public class CycleManagementControllerTests : IClassFixture<CustomWebApplication
 
         // Assert
         Assert.Equal(HttpStatusCode.Forbidden, response.StatusCode);
+
+        var responseBody = await response.Content.ReadAsStringAsync();
+
+        var jsonResponse = JsonDocument.Parse(responseBody);
+        var root = jsonResponse.RootElement;
+
+        Assert.Equal("AuthorizationFailed", root.GetProperty("error").GetString());
+        Assert.Contains("Forbidden. Current user does not have a specified scope", root.GetProperty("message").GetString());
+        Assert.Contains("Requirement Failed", root.GetProperty("details").GetString());
     }
 
     [Fact]

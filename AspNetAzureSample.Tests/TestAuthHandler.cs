@@ -9,6 +9,7 @@ namespace AspNetAzureSample.Tests;
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public const string DefaultScheme = "TestScheme";
+    public static Claim[] ExtraClaims { get; set; } = [];
 
     public TestAuthHandler(
         IOptionsMonitor<AuthenticationSchemeOptions> options,
@@ -24,6 +25,7 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
                 new Claim(ClaimTypes.NameIdentifier, "testuser"),
                 new Claim(ClaimTypes.Name, "testuser"),
             };
+        claims = [.. claims, .. ExtraClaims];
 
         var identity = new ClaimsIdentity(claims, DefaultScheme);
         var principal = new ClaimsPrincipal(identity);

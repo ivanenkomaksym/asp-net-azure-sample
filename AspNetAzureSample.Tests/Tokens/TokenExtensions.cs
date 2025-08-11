@@ -94,10 +94,9 @@ namespace AspNetAzureSample.Tests.Tokens
 
         public static string GenerateJwtTokenWithoutSignature()
         {
-            var azureadOptions = GetAzureADOptions();
             var userId = "admin@example.com";
-            var issuer = $"https://login.microsoftonline.com/{azureadOptions.TenantId}";
-            var audience = azureadOptions.Audience;
+            var issuer = $"https://login.microsoftonline.com/common";
+            var audience = "CDE2D3EA-9124-4F73-A02B-D5C07EDF8311";
             var secretKey = "chR8D4FlG6E3mwquM3VtnsugS6zqsrBQ";
 
             var claims = new[]
@@ -126,7 +125,7 @@ namespace AspNetAzureSample.Tests.Tokens
         private static AzureADOptions GetAzureADOptions()
         {
             var projectDir = Directory.GetCurrentDirectory();
-            var configPath = Path.Combine(projectDir, "appsettings.json");
+            var configPath = Path.Combine(projectDir, "appsettings.Development.json");
 
             var builder = new ConfigurationBuilder().AddJsonFile(configPath);
 

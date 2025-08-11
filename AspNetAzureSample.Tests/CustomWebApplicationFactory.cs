@@ -65,27 +65,25 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
             .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>(TestAuthHandler.DefaultScheme, options => { });
 
             // Seed data for your in-memory database if needed for tests
-            using (var scope = services.BuildServiceProvider().CreateScope())
+            using var scope = services.BuildServiceProvider().CreateScope();
+            var scopedServices = scope.ServiceProvider;
+            var db = scopedServices.GetRequiredService<ApplicationContext>();
+            db.Database.EnsureCreated(); // Ensure the in-memory DB is created
+
+            // You might want to seed test users here
+            var userManager = scopedServices.GetRequiredService<UserManager<IdentityUser>>();
+            var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
+
+            // Example: create a test user
+            if (userManager.FindByNameAsync("testuser").Result == null)
             {
-                var scopedServices = scope.ServiceProvider;
-                var db = scopedServices.GetRequiredService<ApplicationContext>();
-                db.Database.EnsureCreated(); // Ensure the in-memory DB is created
-
-                // You might want to seed test users here
-                var userManager = scopedServices.GetRequiredService<UserManager<IdentityUser>>();
-                var roleManager = scopedServices.GetRequiredService<RoleManager<IdentityRole>>();
-
-                // Example: create a test user
-                if (userManager.FindByNameAsync("testuser").Result == null)
-                {
-                    var user = new IdentityUser { UserName = "testuser", Email = "test@example.com", EmailConfirmed = true };
-                    userManager.CreateAsync(user, "Test@123");
-                }
-
-                // Clear the database after each test if using a single factory instance
-                // Or for each test, create a fresh WebApplicationFactory
-                db.SaveChanges();
+                var user = new IdentityUser { UserName = "testuser", Email = "test@example.com", EmailConfirmed = true };
+                userManager.CreateAsync(user, "Test@123");
             }
+
+            // Clear the database after each test if using a single factory instance
+            // Or for each test, create a fresh WebApplicationFactory
+            //db.SaveChanges();
         });
     }
 }
